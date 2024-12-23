@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+	<div th:replace="~{fragment :: meta}"></div>   
+	     
+	<div th:replace="~{fragment :: styles}"></div>
+    <title>NAGOYAMESHI - 名古屋を味わおう</title>
+	
+</head>
+<body>
+	<!-- ヘッダー -->
+	             <div th:replace="~{fragment :: header}"></div>
+	
+    <div class="welcome-page">
+
+        <!-- 背景画像 -->
+        <div class="background-image"></div>
+		
+		<!-- アカウント情報 -->
+		<div class="content-box">
+		    <p>	<b style="font-size: 1.5rem;">テスト用</b><br>
+			<b>管理者</b><br>
+				admin1@example.com<br>
+				password123<br>
+			<b>有料会員</b><br>
+				paid@example.com<br>
+				pass1234<br>
+			<b>無料会員</b><br>
+				free@example.com<br>
+			    1234password<br>
+			<b>クレジットカード</b><br>
+				4242424242424242<br>
+				12/50 secキー 555</p>
+		</div>
+
+        <!-- コンテンツ -->
+        <div class="content-box">
+            <h1 class="title">NAGOYAMESHI</h1>
+            <p class="subtitle">名古屋を味わおう</p>
+
+            <!-- ログインフォーム -->
+            <form class="login-form" th:action="@{/login}" method="post">
+                <label for="email" class="visually-hidden">メールアドレス</label>
+                <input type="text" id="username" name="username" placeholder="メールアドレスを入力">
+
+                <label for="password" class="visually-hidden">パスワード</label>
+                <input type="password" id="password" name="password" placeholder="パスワードを入力">
+
+                <button type="submit">ログイン</button>
+            </form>
+
+            <!-- リンク -->
+            <div class="links">
+                <a th:href="@{/signup}">新規会員登録</a> |
+                <a th:href="@{/restaurants}">店舗一覧</a>
+            </div>
+        </div>
+		<!-- フッター -->
+		             <div th:replace="~{fragment :: footer}"></div>
+    </div>
+	<div th:replace="~{fragment :: scripts}"></div> 
+</body>
+</html>

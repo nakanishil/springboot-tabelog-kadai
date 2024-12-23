@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <title>マイレビュー一覧</title>
+</head>
+<body>
+    <div class="nagoyameshi-wrapper">
+        <!-- ヘッダー -->
+        <div th:replace="~{fragment :: header}"></div>
+
+        <main>
+            <div class="container pt-4 pb-5 nagoyameshi-container">
+                <h1 class="text-center mb-4">マイレビュー</h1>
+
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+                <!-- 0件の場合 -->
+                <div th:if="${myReviewsPage.content.size() == 0}" class="alert alert-info text-center">
+                    <p>まだ投稿されたレビューはありません。</p>
+                </div>
+
+                <div th:each="review : ${myReviewsPage.content}" class="card mb-3">
+                    <div class="card-body position-relative">
+                        <!-- 右上に編集・削除リンク -->
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <!-- 編集リンク（文字のみ） -->
+                            <a th:href="@{/edit/{id}(id=${review.id})}" class="review-edit-link">編集</a>
+                            <!-- 削除リンク（文字のみ、確認ダイアログ表示） -->
+                            <a th:href="@{/delete/{id}(id=${review.id})}"
+                               onclick="return confirm('本当に削除しますか？');"
+                               class="review-delete-link">削除</a>
+                        </div>
+
+                        <h2 th:text="${review.restaurant.name}">店舗名</h2>
+                        <span class="star-full" th:each="i : ${#numbers.sequence(1, review.point)}">★</span>
+                        <span class="star-empty" th:each="i : ${#numbers.sequence(review.point+1, 5)}">☆</span>
+                        <span th:text="${'(' + review.point + '/5)'}"></span>
+
+                        <p th:text="${review.reviewComment}"></p>
+                        <p>投稿日時：<span th:text="${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm')}"></span></p>
+                    </div>
+                </div>
+
+                <!-- ページネーション -->
+                <div th:if="${myReviewsPage.totalPages > 1}" class="d-flex justify-content-center mt-4">
+                    <nav aria-label="マイレビュー一覧ページ">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <span th:if="${myReviewsPage.first}" class="page-link disabled">&lt;&lt;</span>
+                                <a th:unless="${myReviewsPage.first}"
+                                   th:href="@{/myReviews(page=0)}"
+                                   class="page-link nagoyameshi-page-link">&lt;&lt;</a>
+                            </li>
+                            <li class="page-item">
+                                <span th:if="${myReviewsPage.first}" class="page-link disabled">&lt;</span>
+                                <a th:unless="${myReviewsPage.first}"
+                                   th:href="@{/myReviews(page=${myReviewsPage.number - 1})}"
+                                   class="page-link nagoyameshi-page-link">&lt;</a>
+                            </li>
+                            <li th:each="i : ${#numbers.sequence(0, myReviewsPage.totalPages - 1)}" class="page-item">
+                                <span th:if="${i == myReviewsPage.number}" class="page-link active nagoyameshi-active" th:text="${i + 1}"></span>
+                                <a th:unless="${i == myReviewsPage.number}"
+                                   th:href="@{/myReviews(page=${i})}"
+                                   class="page-link nagoyameshi-page-link"
+                                   th:text="${i + 1}"></a>
+                            </li>
+                            <li class="page-item">
+                                <span th:if="${myReviewsPage.last}" class="page-link disabled">&gt;</span>
+                                <a th:unless="${myReviewsPage.last}"
+                                   th:href="@{/myReviews(page=${myReviewsPage.number + 1})}"
+                                   class="page-link nagoyameshi-page-link">&gt;</a>
+                            </li>
+                            <li class="page-item">
+                                <span th:if="${myReviewsPage.last}" class="page-link disabled">&gt;&gt;</span>
+                                <a th:unless="${myReviewsPage.last}"
+                                   th:href="@{/myReviews(page=${myReviewsPage.totalPages - 1})}"
+                                   class="page-link nagoyameshi-page-link">&gt;&gt;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </main>
+
+        <!-- フッター -->
+        <div th:replace="~{fragment :: footer}"></div>
+    </div>
+
+    <div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>

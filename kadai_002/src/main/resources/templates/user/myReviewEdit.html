@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <title>レビュー編集</title>
+</head>
+<body>
+    <div class="nagoyameshi-wrapper">
+        <!-- ヘッダー -->
+        <div th:replace="~{fragment :: header}"></div>
+
+        <main>
+            <div class="container pt-4 pb-5 nagoyameshi-container">
+                <h1 class="text-center mb-4">レビュー編集 - <span th:text="${restaurantName}"></span></h1>
+
+                <!-- エラーメッセージがあれば表示 -->
+                <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+                <form th:action="@{/edit/{id}(id=${reviewId})}" method="post" class="card shadow-sm p-4" th:object="${reviewForm}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                    <!-- 星評価 -->
+                    <div class="mb-3">
+                        <h3>評価</h3>
+                        <div class="post-stars-container d-flex gap-2">
+                            <!-- 初期値設定のために hidden で point 保持 -->
+                            <input type="hidden" th:field="*{point}" id="evaluation">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+
+                    <!-- コメント -->
+                    <div class="mb-3">
+                        <label for="reviewComment" class="form-label">コメント</label>
+                        <textarea class="form-control" th:field="*{reviewComment}" id="reviewComment" rows="4" required></textarea>
+                    </div>
+
+                    <!-- 更新ボタン -->
+                    <div class="text-end">
+                        <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">更新する</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- フッター -->
+        <div th:replace="~{fragment :: footer}"></div>
+    </div>
+
+    <div th:replace="~{fragment :: scripts}"></div>
+    <script src="/js/reviewStar.js"></script>
+    <script>
+        // 編集ページ用、初期評価をJSで表示する処理
+        document.addEventListener('DOMContentLoaded', function() {
+            const evaluationInput = document.getElementById('evaluation');
+            const stars = document.querySelectorAll('.post-stars-container .star');
+            const currentValue = parseInt(evaluationInput.value, 10) || 0;
+
+            stars.forEach(star => {
+                const value = parseInt(star.getAttribute('data-value'), 10);
+                if (value <= currentValue) {
+                    star.classList.add('selected');
+                }
+
+                star.addEventListener('click', () => {
+                    evaluationInput.value = value;
+                    stars.forEach(s => s.classList.remove('selected'));
+                    for (let i = 0; i < value; i++) {
+                        stars[i].classList.add('selected');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

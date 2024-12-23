@@ -1,0 +1,311 @@
+/*独自のスタイル適用classには名前の先頭にnagoyameshi-と記載*/
+
+html {
+  font-size: 14px;
+}
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;  
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+a {
+  color: #5196a6;
+  text-decoration: none !important;
+}
+
+a:hover {
+    color: #407784;
+}
+
+footer {
+  width: 100%;
+  height: 60px;
+  position: absolute;
+  bottom: 0;    
+  background-color: #f2f0eb;
+}
+
+.nagoyameshi-wrapper {
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+}
+
+.nagoyameshi-navbar {
+  min-height: 60px;
+}
+
+.nagoyameshi-logo {
+  height: 30px;  
+}
+
+.nagoyameshi-btn {
+  background-color: #5196a6 !important;   
+  transition: 0.1s;
+}
+
+.nagoyameshi-btn:hover {
+  opacity: 0.8;   
+}
+
+.nagoyameshi-page-link {
+  color: #5196a6;
+}
+
+.nagoyameshi-page-link:hover {
+  color: #407784;
+}
+
+.nagoyameshi-active {
+  background-color: #5196a6 !important;
+  border-color: #5196a6 !important;
+}
+
+.nagoyameshi-pre-wrap {
+  /* 改行文字で行を折り返す */
+  white-space: pre-wrap;
+}
+
+.nagoyameshi-link-danger {
+    color: #f2594b;
+}
+
+.nagoyameshi-link-danger:hover {
+    color: #a63c3c;
+}
+
+.nagoyameshi-btn-danger {
+    background-color: #f2594b !important;
+    transition: 0.1s;
+}
+
+.nagoyameshi-btn-danger:hover {
+  opacity: 0.8;   
+}
+
+.nagoyameshi-dropdown-item:active {
+  background-color: #5196a6;
+}
+
+.nagoyameshi-card-link {
+  transition: 0.3s;
+}
+
+.nagoyameshi-card-link:hover {
+  opacity: 0.7;
+}
+
+.nagoyameshi-horizontal-card-image {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+
+.nagoyameshi-sort-box {
+  width: 150px;
+}
+
+.nagoyameshi-restaurant-image {
+    max-width: 100%; /* 横幅をコンテナの幅に制限 */
+    max-height: 500px; /* 高さを400px以下に制限 */
+    object-fit: cover; /* アスペクト比を保ちながら中央を切り抜き */
+	display: block; /* ブロック要素にして中央寄せを有効にする */
+    margin: 0 auto; /* 左右のマージンを自動に設定し中央寄せ */
+}
+
+/*TOPページ*/
+/* style.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f7e4c6;
+    color: #333;
+}
+
+.welcome-page {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+.background-image {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url('/images/topimage.png');
+	background-size: cover;
+	background-position: center;
+	filter: brightness(0.8);
+	z-index: 0; /* 背景画像がコンテンツの後ろに表示される */
+}
+
+.content-box {
+	position: relative;
+	z-index: 1;
+	background-color: rgba(255, 255, 255, 0.9);
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+	text-align: center;
+	max-width: 400px;
+
+	/* 右に寄せる設定 */
+	margin-left: auto;
+	margin-right: 20px; /* 右端からの余白を調整 */
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login-form input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.login-form button {
+    background-color: #ff9800;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.login-form button:hover {
+    background-color: #e68900;
+}
+
+.links {
+    margin-top: 15px;
+}
+
+.links a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+/* ここまでTOPページCSS */
+
+/*レビュー*/
+.post-stars-container .star {
+    font-size: 2rem;
+    cursor: pointer;
+    color: #ddd;
+}
+
+.post-stars-container .star.selected {
+    color: #ffc107;
+}
+
+.review-rating {
+    display: inline-block;
+    font-size: 1.5rem;
+    color: #ffc107;
+}
+
+.post-stars-container .star {
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.post-stars-container .star.selected {
+    color: #ffc107;
+}
+
+.star-full {
+    color: #ffc107; 
+    font-size: 1.2em; /* 任意でサイズ調整 */
+}
+
+.star-empty {
+    color: #cccccc; /* 薄い灰色 */
+    font-size: 1.2em; /* 任意でサイズ調整 */
+}
+
+.review-actions {
+    float: right;
+    font-size: 0.9rem; /* 小さめの文字サイズ */
+    color: #555;       /* 控えめな文字色 */
+}
+
+.review-actions a {
+    margin-left: 8px;  /* リンク間のスペース */
+    text-decoration: none;
+    color: #555;
+}
+
+.review-actions a:hover {
+    text-decoration: underline;
+    color: #333;       /* ホバー時少し濃くする */
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; 
+  height: 1px; 
+  padding: 0; 
+  margin: -1px; 
+  overflow: hidden; 
+  clip: rect(0,0,0,0); 
+  white-space: nowrap; 
+  border: 0;
+}
+
+/*予約フォーム*/
+input#appointmentDate {
+    width: 100%; /* 入力欄をフォーム幅に合わせる */
+    padding: 10px; /* パディングを追加 */
+    border: 1px solid #ccc; /* ボーダーデザイン */
+    border-radius: 5px; /* 角を丸くする */
+}
+
+.subtitle {
+	font-weight:bold;
+}
+
+
+@media screen and (min-width: 1400px) {
+  .nagoyameshi-container {
+    max-width: 1200px;
+  }
+}

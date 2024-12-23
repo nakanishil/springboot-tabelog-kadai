@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <title>お気に入り一覧</title>
+</head>
+<body>
+<div class="nagoyameshi-wrapper">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment :: header}"></div>
+
+    <main>
+        <div class="container pt-4 pb-5 nagoyameshi-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">お気に入り一覧</li>
+                </ol>
+            </nav>
+
+            <h1 class="mb-4 text-center">お気に入り一覧</h1>
+
+            <!-- お気に入りがない場合 -->
+            <div th:if="${favoritesPage.totalElements == 0}" class="alert alert-info text-center">
+                <p>お気に入りが登録されていません。</p>
+            </div>
+
+            <!-- お気に入りリスト (favoritesPage.content) -->
+            <div th:if="${favoritesPage.totalElements > 0}">
+                <div th:each="favorite : ${favoritesPage.content}" class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${favorite.restaurant.name}">店舗名</h5>
+                        <p class="card-text" th:text="${favorite.favoriteComment}">コメント</p>
+
+                        <!-- コメント編集ボタン -->
+                        <a class="btn btn-sm btn-secondary me-2"
+                           th:href="@{/myFavorites/{favoriteId}/edit(favoriteId=${favorite.id})}">
+                            コメント編集
+                        </a>
+
+                        <!-- お気に入り解除ボタン (モーダルを使って確認) -->
+                        <button type="button"
+                                class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteConfirmModal"
+                                th:attr="data-favorite-id=${favorite.id}">
+                            お気に入り解除
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ページネーション -->
+            <div th:if="${favoritesPage.totalPages > 1}" class="d-flex justify-content-center">
+                <nav aria-label="お気に入り一覧ページ">
+                    <ul class="pagination">
+                        <!-- 最初へ -->
+                        <li class="page-item">
+                            <span th:if="${favoritesPage.first}" class="page-link disabled">&lt;&lt;</span>
+                            <a th:unless="${favoritesPage.first}"
+                               th:href="@{/myFavorites(page=0)}"
+                               class="page-link">&lt;&lt;</a>
+                        </li>
+
+                        <!-- 前へ -->
+                        <li class="page-item">
+                            <span th:if="${favoritesPage.first}" class="page-link disabled">&lt;</span>
+                            <a th:unless="${favoritesPage.first}"
+                               th:href="@{/myFavorites(page=${favoritesPage.number - 1})}"
+                               class="page-link">&lt;</a>
+                        </li>
+
+                        <!-- ページ番号 -->
+                        <li th:each="i : ${#numbers.sequence(0, favoritesPage.totalPages - 1)}" class="page-item">
+                            <span th:if="${i == favoritesPage.number}" class="page-link active"
+                                  th:text="${i + 1}"></span>
+                            <a th:unless="${i == favoritesPage.number}"
+                               th:href="@{/myFavorites(page=${i})}"
+                               class="page-link"
+                               th:text="${i + 1}"></a>
+                        </li>
+
+                        <!-- 次へ -->
+                        <li class="page-item">
+                            <span th:if="${favoritesPage.last}" class="page-link disabled">&gt;</span>
+                            <a th:unless="${favoritesPage.last}"
+                               th:href="@{/myFavorites(page=${favoritesPage.number + 1})}"
+                               class="page-link">&gt;</a>
+                        </li>
+
+                        <!-- 最後へ -->
+                        <li class="page-item">
+                            <span th:if="${favoritesPage.last}" class="page-link disabled">&gt;&gt;</span>
+                            <a th:unless="${favoritesPage.last}"
+                               th:href="@{/myFavorites(page=${favoritesPage.totalPages - 1})}"
+                               class="page-link">&gt;&gt;</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <div th:replace="~{fragment :: footer}"></div>
+</div>
+
+<!-- 削除確認モーダル -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- モーダルヘッダー -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteConfirmModalLabel">お気に入り解除</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <!-- モーダル本文 -->
+      <div class="modal-body">
+        本当に削除しますか？ この操作は取り消せません。
+      </div>
+      <!-- モーダルフッター -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+        <!-- 削除フォーム -->
+        <form id="deleteForm" method="post" style="display:inline;">
+          <!-- CSRF -->
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+          <!-- 【重要】一覧から削除された場合は "list" と付与 -->
+          <input type="hidden" name="returnTo" value="list" />
+          <button type="submit" class="btn btn-danger">削除</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- scripts -->
+<div th:replace="~{fragment :: scripts}"></div>
+<script>
+  const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+  deleteConfirmModal.addEventListener('show.bs.modal', function (event) {
+      // クリックされた削除ボタン
+      const button = event.relatedTarget;
+      const favoriteId = button.getAttribute('data-favorite-id');
+
+      // フォームの action を書き換え
+      const deleteForm = document.getElementById('deleteForm');
+      deleteForm.action = '/myFavorites/' + favoriteId + '/delete';
+  });
+</script>
+</body>
+</html>

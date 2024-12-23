@@ -1,0 +1,71 @@
+<!-- /src/main/resources/templates/user/editFavorite.html -->
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- 共通の <meta> や <link> 読み込み -->
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <title>お気に入りコメント編集</title>
+</head>
+<body>
+    <div class="nagoyameshi-wrapper">
+        <!-- ヘッダー（共通フラグメントを読み込む例） -->
+        <div th:replace="~{fragment :: header}"></div>
+
+        <main>
+            <div class="container pt-4 pb-5 nagoyameshi-container">
+                
+                <!-- パンくずリスト -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+                        <li class="breadcrumb-item">
+                            <a th:href="@{/myFavorites}">お気に入り一覧</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            コメント編集
+                        </li>
+                    </ol>
+                </nav>
+
+                <h1 class="mb-4 text-center">お気に入りコメント編集</h1>
+
+                <!-- 
+                    コメント編集フォーム 
+                    - コントローラの @GetMapping("/{favoriteId}/edit") で表示
+                    - コントローラの @PostMapping("/{favoriteId}/update") へ送信
+                -->
+                <form th:action="@{/myFavorites/{favoriteId}/update(favoriteId=${favoriteId})}"
+                      method="post"
+                      th:object="${favoriteForm}">
+                    
+                    <!-- CSRF対策: トークンを埋め込み -->
+                    <input type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    
+                    <!-- コメント入力欄 -->
+                    <div class="mb-3">
+                        <label for="favoriteComment" class="form-label">コメント</label>
+                        <textarea th:field="*{favoriteComment}"
+                                  class="form-control"
+                                  rows="3"
+                                  id="favoriteComment"></textarea>
+                    </div>
+
+                    <!-- ボタン類 -->
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <a th:href="@{/myFavorites}" class="btn btn-secondary">キャンセル</a>
+                </form>
+            </div>
+        </main>
+
+        <!-- フッター（共通フラグメント） -->
+        <div th:replace="~{fragment :: footer}"></div>
+    </div>
+
+    <!-- 共通のスクリプト読み込み -->
+    <div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>

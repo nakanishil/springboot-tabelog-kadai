@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">    
+    <head>
+        <div th:replace="~{fragment :: meta}"></div>   
+             
+        <div th:replace="~{fragment :: styles}"></div>
+          
+        <title>会員情報</title>   
+    </head>
+    <body>
+        <div class="nagoyameshi-wrapper">
+            <!-- ヘッダー -->
+            <div th:replace="~{fragment :: header}"></div>
+            
+            <main>
+                <div class="container pb-5 nagoyameshi-container">
+                    <div class="row justify-content-center">
+                        <div class="col-xl-5 col-lg-6 col-md-8">
+                            <nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0"> 
+                                    <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>                       
+                                    <li class="breadcrumb-item active" aria-current="page">会員情報</li>
+                                </ol>
+                            </nav> 
+                            
+                            <h1 class="mb-3 text-center">会員情報</h1> 
+                            
+                            <div class="d-flex justify-content-end align-items-end mb-3">                    
+                                <div>
+                                    <a th:href="@{/user/edit}">編集</a>                        
+                                </div>
+                            </div>                                       
+                            
+                            <div th:if="${successMessage}" class="alert alert-info">
+                                <span th:text="${successMessage}"></span>
+                            </div>                               
+                            
+                            <div class="container mb-4">
+								
+								<div class="row pb-2 mb-2 border-bottom">
+	                              <div class="col-4">
+	                                  <span class="fw-bold">会員番号</span>
+	                              </div>
+	      
+	                              <div class="col">
+	                                  <span th:text="${user.getId()}"></span>
+	                              </div>
+	                            </div> 
+								
+								<div class="row pb-2 mb-2 border-bottom">
+	                              <div class="col-4">
+	                                  <span class="fw-bold">メールアドレス</span>
+	                              </div>
+	      
+	                              <div class="col">
+	                                  <span th:text="${user.getMailAddress()}"></span>
+	                              </div>
+	                            </div> 
+                                <div class="row pb-2 mb-2 border-bottom">
+                                    <div class="col-4">
+                                        <span class="fw-bold">氏名</span>
+                                    </div>
+            
+                                    <div class="col">
+                                        <span th:text="${user.getName()}"></span>
+                                    </div>
+                                </div>                    
+                                
+                                <div class="row pb-2 mb-2 border-bottom">
+                                    <div class="col-4">
+                                        <span class="fw-bold">電話番号</span>
+                                    </div>
+            
+                                    <div class="col">
+                                        <span th:text="${user.getPhoneNumber()}"></span>
+                                    </div>
+                                </div>  
+								
+                                <div class="row pb-2 mb-2 border-bottom">
+                                    <div class="col-4">
+                                        <span class="fw-bold">郵便番号</span>
+                                    </div>
+            
+                                    <div class="col">
+                                        <span th:text="${user.getPostalCode()}"></span>
+                                    </div>
+                                </div>   
+                                
+                                <div class="row pb-2 mb-2 border-bottom">
+                                    <div class="col-4">
+                                        <span class="fw-bold">住所</span>
+                                    </div>
+            
+                                    <div class="col">
+                                        <span th:text="${user.getAddress()}"></span>
+                                    </div>
+                                </div>
+								<div class="row pb-2 mb-2 border-bottom">
+								    <div class="col-4">
+								        <span class="fw-bold">ステータス</span>
+								    </div>
+								    <div class="col">
+								        <span th:if="${@userService.isFreeMember(user)}">無料会員</span>
+								        <span th:if="${@userService.isPayingMember(user)}">有料会員</span>
+								    </div>
+								</div>
+								<div th:if="${@userService.isFreeMember(user)}" class="row pb-2 mb-2 border-bottom">
+								  <p>有料会員は、お気に入り機能と予約機能が変便利です。</p>
+								  <a th:href="@{/user/subscribe}" class="btn btn-primary">有料会員登録へ</a>
+								</div>
+								<div th:if="${@userService.isPayingMember(user)}">
+								  <p>現在有料会員です。</p>
+								  <form th:action="@{/user/cancel}" method="post">
+								    <button type="submit" class="btn btn-danger">有料会員を解約する</button>
+								  </form>
+								</div>
+								
+								<div th:if="${user == null}">
+								    <p>ユーザー情報が取得できません。再度ログインしてください。</p>
+								    <a href="/login">ログインページへ</a>
+								</div>
+								<div>
+								    <p th:if="${successMessage}" th:text="${successMessage}" class="success"></p>
+								    <p th:if="${errorMessage}" th:text="${errorMessage}" class="error"></p>
+								</div>
+
+
+
+
+            
+                                
+                                                              
+                            </div>                                                                                                                           
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- フッター -->
+            <div th:replace="~{fragment :: footer}"></div>
+        </div>    
+        
+        <div th:replace="~{fragment :: scripts}"></div>  
+  </body>
+</html>

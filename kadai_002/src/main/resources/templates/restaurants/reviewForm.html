@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <title>レビュー投稿</title>
+</head>
+<body>
+    <div class="nagoyameshi-wrapper">
+        <!-- ヘッダー -->
+        <div th:replace="~{fragment :: header}"></div>
+
+        <main>
+            <div class="container pt-4 pb-5 nagoyameshi-container">
+                <h1 class="text-center mb-4" th:text="'レビュー投稿 - ' + ${restaurant.name}"></h1>
+
+                <form th:action="@{/restaurants/{id}/reviews/add(id=${restaurant.id})}" method="post" class="card shadow-sm p-4">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                    <!-- 星評価 -->
+                    <div class="mb-3">
+                        <h3>評価</h3>
+                        <div class="post-stars-container d-flex gap-2">
+                            <input type="hidden" name="point" id="evaluation">
+                            <span class="star" data-value="1">★</span>
+                            <span class="star" data-value="2">★</span>
+                            <span class="star" data-value="3">★</span>
+                            <span class="star" data-value="4">★</span>
+                            <span class="star" data-value="5">★</span>
+                        </div>
+                    </div>
+
+                    <!-- コメント -->
+                    <div class="mb-3">
+                        <label for="reviewComment" class="form-label">レビューを記入　　※以前に投稿がある場合は上書きされます。</label>
+                        <textarea class="form-control" id="reviewComment" name="reviewComment" rows="4" required></textarea>
+                    </div>
+
+                    <!-- 投稿ボタン -->
+                    <div class="text-end">
+                        <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">投稿する</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- フッター -->
+        <div th:replace="~{fragment :: footer}"></div>
+    </div>
+    <script src="/js/reviewStar.js"></script>
+</body>
+</html>

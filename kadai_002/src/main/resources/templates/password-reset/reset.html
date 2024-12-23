@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">    
+<head>
+    <!-- 共通メタ情報 -->
+    <div th:replace="~{fragment :: meta}"></div>   
+    <!-- 共通スタイルシートの読み込み -->
+    <div th:replace="~{fragment :: styles}"></div>
+
+    <title>パスワードリセット</title>
+</head>
+<body>
+<div class="nagoyameshi-wrapper">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment :: header}"></div>
+    
+    <main>
+        <div class="container pb-5 nagoyameshi-container">
+            <div class="row justify-content-center">
+                <div class="col-xl-5 col-lg-6 col-md-8">
+                    <nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">パスワード再設定</li>
+                        </ol>
+                    </nav> 
+
+                    <h1 class="mb-3 text-center">パスワード再設定</h1> 
+
+                    <!-- エラーメッセージ（トークン無効など） -->
+                    <div th:if="${errorMessage}" class="alert alert-danger">
+                        <span th:text="${errorMessage}"></span>
+                    </div>
+
+                    <p class="mb-4">
+                        新しいパスワードを入力し、「パスワードを変更」ボタンを押してください。
+                    </p>
+
+                    <!-- フォーム -->
+                    <form th:action="@{/password-reset/reset-password}" th:object="${resetPasswordForm}" method="post">
+                        <input type="hidden" th:field="*{token}">
+
+                        <!-- 新しいパスワード -->
+                        <div class="mb-3">
+                            <label class="fw-bold" for="newPassword">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-1">新しいパスワード</span>
+                                    <span class="badge bg-danger">必須</span>
+                                </div>
+                            </label>
+                            <div th:if="${#fields.hasErrors('newPassword')}" class="text-danger small mb-2" th:errors="*{newPassword}"></div>
+                            <input type="password" class="form-control" th:field="*{newPassword}" id="newPassword" placeholder="パスワード">
+                        </div>
+
+                        <!-- 新しいパスワード(確認用) -->
+                        <div class="mb-3">
+                            <label class="fw-bold" for="newPasswordConfirmation">
+                                <div class="d-flex align-items-center">
+                                    <span class="me-1">新しいパスワード(確認用)</span>
+                                    <span class="badge bg-danger">必須</span>
+                                </div>
+                            </label>
+                            <div th:if="${#fields.hasErrors('newPasswordConfirmation')}" class="text-danger small mb-2" th:errors="*{newPasswordConfirmation}"></div>
+                            <input type="password" class="form-control" th:field="*{newPasswordConfirmation}" id="newPasswordConfirmation" placeholder="パスワード確認用">
+                        </div>
+
+                        <div class="form-group d-flex justify-content-center my-4">
+                            <button type="submit" class="btn text-white shadow-sm w-50 nagoyameshi-btn">パスワードを変更</button>
+                        </div>
+                    </form>
+
+                    <!-- ログインページへのリンク -->
+                    <div class="text-center mt-3">
+                        <a th:href="@{/login}">ログインページへ戻る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <div th:replace="~{fragment :: footer}"></div>
+</div>
+
+<!-- 共通スクリプト等 -->
+<div th:replace="~{fragment :: scripts}"></div>  
+</body>
+</html>
