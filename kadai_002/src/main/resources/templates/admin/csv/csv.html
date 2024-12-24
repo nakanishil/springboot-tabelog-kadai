@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <!-- meta -->
+        <div th:replace="~{fragment :: meta}"></div>
+        <!-- Boostrap, Google Fonts -->
+        <div th:replace="~{fragment :: styles}"></div>
+
+        <title>【管理者ページ】CSV出力</title>
+    </head>
+    <body>
+        <div class="nagoyameshi-wrapper">
+            <!-- ヘッダー -->
+            <div th:replace="~{fragment :: header}"></div>
+
+            <main>
+                <div class="container pt-4 pb-5 nagoyameshi-container">
+                    <div class="row justify-content-center">
+                        <div class="col-xl-5 col-lg-6 col-md-8">
+                            <nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item">
+                                        <a th:href="@{/admin/restaurants}">飲食店一覧</a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">CSV出力</li>
+                                </ol>
+                            </nav>
+
+                            <h1 class="mb-4 text-center">CSV出力</h1>
+
+                            <!-- CSV出力ボタン（処理は未実装） -->
+                            <div class="form-group d-flex justify-content-center my-4">
+                                <button type="button" class="btn btn-primary shadow-sm w-50">
+                                    CSV出力
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- フッター -->
+            <div th:replace="~{fragment :: footer}"></div>
+        </div>
+
+        <div th:replace="~{fragment :: scripts}"></div>
+        <script th:src="@{/js/preview.js}"></script>
+    </body>
+</html>

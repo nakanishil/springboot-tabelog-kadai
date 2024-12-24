@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">    
+<html xmlns:th="https://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+      lang="ja">    
+
 <head>
     <!-- 共通メタ情報 -->
     <div th:replace="~{fragment :: meta}"></div>   
     <!-- 共通スタイルシートの読み込み -->
     <div th:replace="~{fragment :: styles}"></div>
 
-    <title>パスワードリセット</title>
+    <title>パスワード再設定</title>
 </head>
 <body>
 <div class="nagoyameshi-wrapper">
@@ -17,6 +20,8 @@
         <div class="container pb-5 nagoyameshi-container">
             <div class="row justify-content-center">
                 <div class="col-xl-5 col-lg-6 col-md-8">
+                    
+                    <!-- パンくずリスト -->
                     <nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
@@ -27,59 +32,89 @@
                     <h1 class="mb-3 text-center">パスワード再設定</h1> 
 
                     <!-- エラーメッセージ（トークン無効など） -->
-                    <div th:if="${errorMessage}" class="alert alert-danger">
+                    <div th:if="${errorMessage}" class="alert alert-danger mb-3">
                         <span th:text="${errorMessage}"></span>
                     </div>
 
-                    <p class="mb-4">
-                        新しいパスワードを入力し、「パスワードを変更」ボタンを押してください。
-                    </p>
+                    <!-- ここでパスワード変更成功時のメッセージを表示 -->
+                    <div th:if="${successMessage}" class="alert alert-success mb-3">
+                        <span th:text="${successMessage}"></span>
+                    </div>
 
-                    <!-- フォーム -->
-                    <form th:action="@{/password-reset/reset-password}" th:object="${resetPasswordForm}" method="post">
-                        <input type="hidden" th:field="*{token}">
+                    <!-- 
+                        パスワード更新成功後はフォームを隠したい場合は、 
+                        以下のフォーム部分を th:unless="${successMessage}" で括るとよい。
+                    -->
+                    <div th:unless="${successMessage}">
+                        <p class="mb-4">
+                            新しいパスワードを入力し、「パスワードを変更」ボタンを押してください。
+                        </p>
 
-                        <!-- 新しいパスワード -->
-                        <div class="mb-3">
-                            <label class="fw-bold" for="newPassword">
-                                <div class="d-flex align-items-center">
-                                    <span class="me-1">新しいパスワード</span>
-                                    <span class="badge bg-danger">必須</span>
+                        <!-- パスワード再設定フォーム -->
+                        <form th:action="@{/password-reset/reset-password}"
+                              th:object="${resetPasswordForm}"
+                              method="post">
+
+                            <!-- hiddenでトークンを持たせる -->
+                            <input type="hidden" th:field="*{token}">
+
+                            <!-- 新しいパスワード入力欄 -->
+                            <div class="mb-3">
+                                <label class="fw-bold" for="newPassword">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1">新しいパスワード</span>
+                                        <span class="badge bg-danger">必須</span>
+                                    </div>
+                                </label>
+                                <div th:if="${#fields.hasErrors('newPassword')}" 
+                                     class="text-danger small mb-2" 
+                                     th:errors="*{newPassword}">
                                 </div>
-                            </label>
-                            <div th:if="${#fields.hasErrors('newPassword')}" class="text-danger small mb-2" th:errors="*{newPassword}"></div>
-                            <input type="password" class="form-control" th:field="*{newPassword}" id="newPassword" placeholder="パスワード">
-                        </div>
+                                <input type="password" class="form-control"
+                                       th:field="*{newPassword}" id="newPassword"
+                                       placeholder="パスワード">
+                            </div>
 
-                        <!-- 新しいパスワード(確認用) -->
-                        <div class="mb-3">
-                            <label class="fw-bold" for="newPasswordConfirmation">
-                                <div class="d-flex align-items-center">
-                                    <span class="me-1">新しいパスワード(確認用)</span>
-                                    <span class="badge bg-danger">必須</span>
+                            <!-- 新しいパスワード(確認用) -->
+                            <div class="mb-3">
+                                <label class="fw-bold" for="newPasswordConfirmation">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-1">新しいパスワード(確認用)</span>
+                                        <span class="badge bg-danger">必須</span>
+                                    </div>
+                                </label>
+                                <div th:if="${#fields.hasErrors('newPasswordConfirmation')}" 
+                                     class="text-danger small mb-2" 
+                                     th:errors="*{newPasswordConfirmation}">
                                 </div>
-                            </label>
-                            <div th:if="${#fields.hasErrors('newPasswordConfirmation')}" class="text-danger small mb-2" th:errors="*{newPasswordConfirmation}"></div>
-                            <input type="password" class="form-control" th:field="*{newPasswordConfirmation}" id="newPasswordConfirmation" placeholder="パスワード確認用">
-                        </div>
+                                <input type="password" class="form-control"
+                                       th:field="*{newPasswordConfirmation}" 
+                                       id="newPasswordConfirmation"
+                                       placeholder="パスワード確認用">
+                            </div>
 
-                        <div class="form-group d-flex justify-content-center my-4">
-                            <button type="submit" class="btn text-white shadow-sm w-50 nagoyameshi-btn">パスワードを変更</button>
-                        </div>
-                    </form>
+                            <div class="form-group d-flex justify-content-center my-4">
+                                <button type="submit" 
+                                        class="btn text-white shadow-sm w-50 nagoyameshi-btn">
+                                    パスワードを変更
+                                </button>
+                            </div>
+                        </form>
+                    </div>
 
-                    <!-- ログインページへのリンク -->
+                    <!-- ログインページへのリンクは共通で表示 -->
                     <div class="text-center mt-3">
                         <a th:href="@{/login}">ログインページへ戻る</a>
                     </div>
-                </div>
-            </div>
-        </div>
+
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container -->
     </main>
 
     <!-- フッター -->
     <div th:replace="~{fragment :: footer}"></div>
-</div>
+</div><!-- /.nagoyameshi-wrapper -->
 
 <!-- 共通スクリプト等 -->
 <div th:replace="~{fragment :: scripts}"></div>  

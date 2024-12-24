@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="ja">
+<head>
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <title>カテゴリ一覧</title>
+</head>
+<body>
+<div class="nagoyameshi-wrapper">
+
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment :: header}"></div>
+
+    <main>
+        <div class="container pt-4 pb-5 nagoyameshi-container">
+            <div class="row justify-content-center">
+                <div class="col-xxl-9 col-xl-10 col-lg-11">
+
+                    <!-- タイトル -->
+                    <h1 class="mb-4 text-center">カテゴリ一覧</h1>
+
+                    <!-- ▼ 上部フォームの配置例（users/index.html と同じ位置） -->
+                    <div class="d-flex justify-content-between align-items-end">
+                        <!-- 検索フォーム -->
+                        <form method="get" th:action="@{/admin/categories}" class="mb-3">
+                            <div class="input-group">
+                                <!-- name="keyword" に入力されたカテゴリ名を受け取る -->
+                                <input type="text"
+                                       class="form-control"
+                                       name="keyword"
+                                       th:value="${keyword}"
+                                       placeholder="カテゴリ名の一部">
+                                <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">
+                                    検索
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ▼ 新規カテゴリ追加（モーダルを開く） -->
+                    <div class="mb-3 text-end">
+                        <a href="#"
+                           data-bs-toggle="modal"
+                           data-bs-target="#createCategoryModal">
+                            新規カテゴリ追加
+                        </a>
+                    </div>
+
+                    <!-- ▼ 検索結果メッセージなどを表示したい場合はここで -->
+                    <div th:if="${successMessage}" class="alert alert-info">
+                        <span th:text="${successMessage}"></span>
+                    </div>
+
+                    <!-- ▼ カテゴリ一覧テーブル -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">カテゴリ名</th>
+                                <th scope="col">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Category エンティティのリストを繰り返し表示 -->
+                            <tr th:each="cat : ${categoryList}">
+                                <td th:text="${cat.id}"></td>
+                                <td th:text="${cat.categoryName}"></td>
+                                <td>
+                                    <!-- 編集リンク（モーダル） -->
+                                    <a href="#"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#editCategoryModal"
+                                       class="edit-link"
+                                       th:data-category-id="${cat.id}"
+                                       th:data-category-name="${cat.categoryName}">
+                                        編集
+                                    </a>
+                                    &nbsp;|&nbsp;
+                                    <!-- 削除リンク（モーダル） -->
+                                    <a href="#"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#deleteCategoryModal"
+                                       class="delete-link"
+                                       th:data-category-id="${cat.id}"
+                                       th:data-category-name="${cat.categoryName}">
+                                        削除
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- ▲ カテゴリ一覧テーブル -->
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <div th:replace="~{fragment :: footer}"></div>
+</div>
+
+<!-- ▼ 1) 新規カテゴリ追加モーダル ▼ -->
+<div class="modal fade" id="createCategoryModal" tabindex="-1"
+     aria-labelledby="createCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- モーダルヘッダー -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="createCategoryModalLabel">新規カテゴリ追加</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <!-- /モーダルヘッダー -->
+
+            <!-- モーダルボディ -->
+            <div class="modal-body">
+                <form th:action="@{/admin/categories/create}" method="post">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">カテゴリ名</label>
+                        <input type="text" class="form-control"
+                               id="categoryName" name="categoryName"
+                               required />
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">キャンセル
+                        </button>
+                        <button type="submit" class="btn btn-primary">登録</button>
+                    </div>
+                </form>
+            </div>
+            <!-- /モーダルボディ -->
+
+        </div>
+    </div>
+</div>
+<!-- ▲ 新規カテゴリ追加モーダル -->
+
+<!-- ▼ 2) 編集モーダル ▼ -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1"
+     aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- モーダルヘッダー -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCategoryModalLabel">カテゴリ編集</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <!-- /モーダルヘッダー -->
+
+            <!-- モーダルボディ -->
+            <div class="modal-body">
+                <form th:action="@{/admin/categories/update}" method="post">
+                    <!-- hidden で ID を送信 -->
+                    <input type="hidden" id="editCategoryId" name="categoryId" />
+
+                    <div class="mb-3">
+                        <label for="editCategoryName" class="form-label">カテゴリ名</label>
+                        <input type="text" class="form-control"
+                               id="editCategoryName" name="categoryName"
+                               required />
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">更新</button>
+                    </div>
+                </form>
+            </div>
+            <!-- /モーダルボディ -->
+
+        </div>
+    </div>
+</div>
+<!-- ▲ 編集モーダル -->
+
+<!-- ▼ 3) 削除モーダル ▼ -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1"
+     aria-labelledby="deleteCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- モーダルヘッダー -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCategoryModalLabel">カテゴリ削除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <!-- /モーダルヘッダー -->
+
+            <!-- モーダルボディ -->
+            <div class="modal-body">
+                <p class="text-danger">
+                    このカテゴリを削除してよろしいですか？<br>
+                    <span id="deleteCategoryName" class="fw-bold"></span>
+                </p>
+                <form th:action="@{/admin/categories/delete}" method="post">
+                    <!-- hidden で ID を送信 -->
+                    <input type="hidden" id="deleteCategoryId" name="categoryId" />
+
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">キャンセル</button>
+                        <button type="submit" class="btn btn-danger">削除</button>
+                    </div>
+                </form>
+            </div>
+            <!-- /モーダルボディ -->
+
+        </div>
+    </div>
+</div>
+<!-- ▲ 削除モーダル -->
+
+<div th:replace="~{fragment :: scripts}"></div>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        // 編集リンクがクリックされたらカテゴリID／名前をモーダルにセット
+        let editLinks = document.querySelectorAll('.edit-link');
+        editLinks.forEach(function(link) {
+            link.addEventListener("click", function() {
+                let categoryId   = link.getAttribute("data-category-id");
+                let categoryName = link.getAttribute("data-category-name");
+                document.getElementById("editCategoryId").value   = categoryId;
+                document.getElementById("editCategoryName").value = categoryName;
+            });
+        });
+
+        // 削除リンクがクリックされたらカテゴリID／名前をモーダルにセット
+        let deleteLinks = document.querySelectorAll('.delete-link');
+        deleteLinks.forEach(function(link) {
+            link.addEventListener("click", function() {
+                let categoryId   = link.getAttribute("data-category-id");
+                let categoryName = link.getAttribute("data-category-name");
+                document.getElementById("deleteCategoryId").value   = categoryId;
+                document.getElementById("deleteCategoryName").textContent = categoryName;
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="ja">
+<head>
+    <div th:replace="~{fragment :: meta}"></div>
+    <div th:replace="~{fragment :: styles}"></div>
+    <title>管理者用レビュー一覧</title>
+</head>
+<body>
+<div class="nagoyameshi-wrapper">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment :: header}"></div>
+
+    <main>
+        <div class="container nagoyameshi-container pb-5">
+            <h1 class="my-3">管理者用：レビュー一覧</h1>
+
+            <!-- ユーザー名検索フォーム -->
+            <form th:action="@{/admin/reviews}" method="get" class="mb-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-auto">
+                        <label for="keyword" class="col-form-label fw-bold">ユーザー名</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="text"
+                               id="keyword"
+                               name="keyword"
+                               class="form-control"
+                               placeholder="ユーザー名を入力（部分一致）"
+                               th:value="${keyword}">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn nagoyameshi-btn text-white">検索</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- まとめて変更フォーム -->
+            <form th:action="@{/admin/reviews/bulkUpdate}" method="post">
+                <!-- 検索キーワードを再送するためのhidden -->
+                <input type="hidden" name="keyword" th:value="${keyword}">
+
+                <!-- レビュー一覧テーブル -->
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>レビューID</th>
+                        <th>ユーザー名</th>
+                        <th>店舗名</th>
+                        <th>評価</th>
+                        <th>コメント(冒頭10文字)</th>
+                        <th>作成日</th>
+                        <th>更新日</th>
+                        <th>公開状態</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="review : ${reviewsPage}">
+                        <td th:text="${review.id}"></td>
+                        <td th:text="${review.user.name}"></td>
+                        <td th:text="${review.restaurant.name}"></td>
+                        <td th:text="${review.point}"></td>
+                        <!-- 冒頭10文字 or 全文 -->
+                        <td th:text="${
+                            #strings.length(review.reviewComment) >= 10 
+                                ? #strings.substring(review.reviewComment, 0, 10) + '...' 
+                                : review.reviewComment
+                        }"></td>
+                        <td th:text="${review.createdAt}"></td>
+                        <td th:text="${review.updatedAt}"></td>
+
+                        <!-- enabled フィールドのプルダウン -->
+                        <td>
+                            <select class="form-select form-select-sm"
+                                    th:name="${'enabledMap[' + review.id + ']'}">
+                                <option th:value="true"
+                                        th:selected="${review.enabled}">公開</option>
+                                <option th:value="false"
+                                        th:selected="${!review.enabled}">非公開</option>
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- ページネーション -->
+                <div th:if="${reviewsPage.totalPages > 1}" class="d-flex justify-content-center">
+                    <nav aria-label="レビュー一覧ページ">
+                        <ul class="pagination">
+                            <!-- 前へ -->
+                            <li class="page-item">
+                                <span th:if="${reviewsPage.first}" class="page-link disabled">&lt;</span>
+                                <a th:unless="${reviewsPage.first}"
+                                   th:href="@{/admin/reviews(page=${reviewsPage.number - 1}, keyword=${keyword})}"
+                                   class="page-link nagoyameshi-page-link">&lt;</a>
+                            </li>
+                            <!-- ページ番号 -->
+                            <li th:each="i : ${#numbers.sequence(0, reviewsPage.totalPages - 1)}" class="page-item">
+                                <span th:if="${i == reviewsPage.number}"
+                                      class="page-link active nagoyameshi-active"
+                                      th:text="${i + 1}"></span>
+                                <a th:unless="${i == reviewsPage.number}"
+                                   th:href="@{/admin/reviews(page=${i}, keyword=${keyword})}"
+                                   class="page-link nagoyameshi-page-link"
+                                   th:text="${i + 1}"></a>
+                            </li>
+                            <!-- 次へ -->
+                            <li class="page-item">
+                                <span th:if="${reviewsPage.last}" class="page-link disabled">&gt;</span>
+                                <a th:unless="${reviewsPage.last}"
+                                   th:href="@{/admin/reviews(page=${reviewsPage.number + 1}, keyword=${keyword})}"
+                                   class="page-link nagoyameshi-page-link">&gt;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <!-- まとめて変更ボタン -->
+                <div class="mt-3">
+                    <button type="submit" class="btn nagoyameshi-btn text-white">まとめて変更</button>
+                </div>
+            </form>
+            <!-- /まとめて変更フォーム -->
+
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <div th:replace="~{fragment :: footer}"></div>
+</div>
+
+<!-- JS -->
+<div th:replace="~{fragment :: scripts}"></div>
+</body>
+</html>

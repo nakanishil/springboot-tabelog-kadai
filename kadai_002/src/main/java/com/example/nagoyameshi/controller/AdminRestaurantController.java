@@ -146,4 +146,12 @@ public class AdminRestaurantController {
             return "redirect:/admin/restaurants/register";
         }
     }
+    
+    @GetMapping("/csv")
+    public String showCsvPage() {
+        // ここで返す文字列は、"src/main/resources/templates" 配下のディレクトリ構成に対応します
+        // "csv/csv" → "templates/csv/csv.html" が読み込まれる
+        return "admin/csv/csv";
+
+    }
 }

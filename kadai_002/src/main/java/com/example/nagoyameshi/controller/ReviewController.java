@@ -94,21 +94,21 @@ public class ReviewController {
     @GetMapping("/restaurants/{id}/reviews")
     public String showReviews(
         @PathVariable("id") Integer restaurantId,
-        @RequestParam(name="page", defaultValue="0") int page, // ページ番号のパラメータ
+        @RequestParam(name="page", defaultValue="0") int page,
         Model model
     ) {
-        // レストラン情報の取得
+        // 1. レストラン情報取得
         Restaurant restaurant = restaurantService.findById(restaurantId)
             .orElseThrow(() -> new IllegalArgumentException("指定されたレストランが見つかりません: " + restaurantId));
 
-        // ページング設定（1ページ10件、更新日時降順など必要に応じて指定）
+        // 2. ページング設定（10件ずつ, 更新日時降順）
         Pageable pageable = PageRequest.of(page, 10, Sort.by("updatedAt").descending());
 
-        // Page<Review>で取得
-        Page<Review> reviewsPage = reviewService.findReviewsByRestaurantIdWithPaging(restaurantId, pageable);
-        // ↑ reviewService内で repository.findByRestaurantId(restaurantId, pageable) を呼ぶメソッドを用意
+        // 3. レビュー取得（★差し替え！）
+        // Page<Review> reviewsPage = reviewService.findReviewsByRestaurantIdWithPaging(restaurantId, pageable);
+        Page<Review> reviewsPage = reviewService.findPublicReviewsByRestaurantIdWithPaging(restaurantId, pageable);
 
-        // モデルにデータ追加
+        // 4. モデルにセット
         model.addAttribute("restaurant", restaurant);
         model.addAttribute("reviewsPage", reviewsPage);
 

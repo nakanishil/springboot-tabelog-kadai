@@ -28,5 +28,19 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findByUser(User user);
     Page<Review> findByRestaurantId(Integer restaurantId, Pageable pageable);
     Page<Review> findByUser(User user, Pageable pageable);
+ // ★IDの降順で全レビューを取得
+    Page<Review> findAllByOrderByIdDesc(Pageable pageable);
+    
+    // ★ユーザー名の部分一致(大文字小文字を区別しない)＋ID降順
+    Page<Review> findByUser_NameContainingIgnoreCaseOrderByIdDesc(String keyword, Pageable pageable);
+    
+ // 「enabled=true かつ restaurantId が一致」 かつ 「更新日時降順」のページング取得
+    Page<Review> findByRestaurantIdAndEnabledTrueOrderByUpdatedAtDesc(Integer restaurantId, Pageable pageable);
+
+    // 「enabled=true かつ restaurantId が一致」 の新着レビュー (createdAt DESC)
+    @Query("SELECT r FROM Review r WHERE r.restaurant.id = :restaurantId AND r.enabled = true ORDER BY r.createdAt DESC")
+    List<Review> findLatestReviewsByRestaurantIdAndEnabledTrue(@Param("restaurantId") Integer restaurantId);
+
+
 
 }

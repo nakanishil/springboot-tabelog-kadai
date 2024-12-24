@@ -168,9 +168,10 @@ public class PasswordResetController {
         prt.setUsed(true);
         tokenService.markUsed(prt); // ← tokenServiceで prt.setUsed(true) & save()
 
-        // 6) 完了後の画面遷移
-        //   - 「ログイン画面」か「ログイン済み画面」にリダイレクトさせる場合が多い
-        return "redirect:/login?resetSuccess";
+        // 4) パスワード更新成功 → 同じテンプレートを返す
+        //    successMessage フラグを立てる
+        model.addAttribute("successMessage", "パスワードが変更されました。再度ログインを行ってください。");
+        return "password-reset/reset";
     }
     
     

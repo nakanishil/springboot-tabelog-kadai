@@ -94,6 +94,18 @@ public class ReviewService {
     public Page<Review> getReviewsByUser(User user, Pageable pageable) {
         return reviewRepository.findByUser(user, pageable);
     }
+    
+ // 追加するメソッド例
+    public Page<Review> findPublicReviewsByRestaurantIdWithPaging(Integer restaurantId, Pageable pageable) {
+        // 「enabled=true & restaurantId一致 & 更新日時降順」ページング
+        return reviewRepository.findByRestaurantIdAndEnabledTrueOrderByUpdatedAtDesc(restaurantId, pageable);
+    }
+
+    // 追加するメソッド例
+    public List<Review> getLatestPublicReviews(Integer restaurantId) {
+        // 「enabled=true & restaurantId一致」新着順
+        return reviewRepository.findLatestReviewsByRestaurantIdAndEnabledTrue(restaurantId);
+    }
 
 
 }
