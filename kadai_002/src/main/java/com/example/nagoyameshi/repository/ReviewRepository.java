@@ -40,6 +40,9 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     // 「enabled=true かつ restaurantId が一致」 の新着レビュー (createdAt DESC)
     @Query("SELECT r FROM Review r WHERE r.restaurant.id = :restaurantId AND r.enabled = true ORDER BY r.createdAt DESC")
     List<Review> findLatestReviewsByRestaurantIdAndEnabledTrue(@Param("restaurantId") Integer restaurantId);
+    
+ // 「有効レビュー」のみ、作成日時降順に「最大4件」取得する
+    List<Review> findTop4ByRestaurantIdAndEnabledTrueOrderByCreatedAtDesc(Integer restaurantId);
 
 
 

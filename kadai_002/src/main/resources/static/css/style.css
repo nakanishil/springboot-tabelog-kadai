@@ -303,6 +303,9 @@ input#appointmentDate {
 	font-weight:bold;
 }
 
+.dropdown-divider {
+  display: none;
+}
 
 @media screen and (min-width: 1400px) {
   .nagoyameshi-container {

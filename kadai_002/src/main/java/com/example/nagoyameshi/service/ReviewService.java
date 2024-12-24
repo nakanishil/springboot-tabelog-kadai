@@ -106,6 +106,11 @@ public class ReviewService {
         // 「enabled=true & restaurantId一致」新着順
         return reviewRepository.findLatestReviewsByRestaurantIdAndEnabledTrue(restaurantId);
     }
+    
+    public List<Review> getLatestPublicReviewsTop4(Integer restaurantId) {
+        return reviewRepository.findTop4ByRestaurantIdAndEnabledTrueOrderByCreatedAtDesc(restaurantId);
+    }
+
 
 
 }

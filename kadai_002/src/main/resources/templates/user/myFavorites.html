@@ -52,54 +52,56 @@
                 </div>
             </div>
 
-            <!-- ページネーション -->
-            <div th:if="${favoritesPage.totalPages > 1}" class="d-flex justify-content-center">
-                <nav aria-label="お気に入り一覧ページ">
-                    <ul class="pagination">
-                        <!-- 最初へ -->
-                        <li class="page-item">
-                            <span th:if="${favoritesPage.first}" class="page-link disabled">&lt;&lt;</span>
-                            <a th:unless="${favoritesPage.first}"
-                               th:href="@{/myFavorites(page=0)}"
-                               class="page-link">&lt;&lt;</a>
-                        </li>
+			<!-- ページネーション -->
+			<div th:if="${favoritesPage.totalPages > 1}" class="d-flex justify-content-center mt-4">
+			    <nav aria-label="お気に入り一覧ページ">
+			        <ul class="pagination">
+			            <!-- 最初へ -->
+			            <li class="page-item">
+			                <span th:if="${favoritesPage.first}" class="page-link disabled">&lt;&lt;</span>
+			                <a th:unless="${favoritesPage.first}"
+			                   th:href="@{/myFavorites(page=0)}"
+			                   class="page-link nagoyameshi-page-link">&lt;&lt;</a>
+			            </li>
+			            <!-- 前へ -->
+			            <li class="page-item">
+			                <span th:if="${favoritesPage.first}" class="page-link disabled">&lt;</span>
+			                <a th:unless="${favoritesPage.first}"
+			                   th:href="@{/myFavorites(page=${favoritesPage.number - 1})}"
+			                   class="page-link nagoyameshi-page-link">&lt;</a>
+			            </li>
 
-                        <!-- 前へ -->
-                        <li class="page-item">
-                            <span th:if="${favoritesPage.first}" class="page-link disabled">&lt;</span>
-                            <a th:unless="${favoritesPage.first}"
-                               th:href="@{/myFavorites(page=${favoritesPage.number - 1})}"
-                               class="page-link">&lt;</a>
-                        </li>
+			            <!-- ページ番号 -->
+			            <li th:each="i : ${#numbers.sequence(0, favoritesPage.totalPages - 1)}" class="page-item">
+			                <span th:if="${i == favoritesPage.number}" 
+			                      class="page-link active nagoyameshi-active" 
+			                      th:text="${i + 1}"></span>
+			                <a th:unless="${i == favoritesPage.number}"
+			                   th:href="@{/myFavorites(page=${i})}"
+			                   class="page-link nagoyameshi-page-link"
+			                   th:text="${i + 1}"></a>
+			            </li>
 
-                        <!-- ページ番号 -->
-                        <li th:each="i : ${#numbers.sequence(0, favoritesPage.totalPages - 1)}" class="page-item">
-                            <span th:if="${i == favoritesPage.number}" class="page-link active"
-                                  th:text="${i + 1}"></span>
-                            <a th:unless="${i == favoritesPage.number}"
-                               th:href="@{/myFavorites(page=${i})}"
-                               class="page-link"
-                               th:text="${i + 1}"></a>
-                        </li>
+			            <!-- 次へ -->
+			            <li class="page-item">
+			                <span th:if="${favoritesPage.last}" class="page-link disabled">&gt;</span>
+			                <a th:unless="${favoritesPage.last}"
+			                   th:href="@{/myFavorites(page=${favoritesPage.number + 1})}"
+			                   class="page-link nagoyameshi-page-link">&gt;</a>
+			            </li>
+			            <!-- 最後へ -->
+			            <li class="page-item">
+			                <span th:if="${favoritesPage.last}" class="page-link disabled">&gt;&gt;</span>
+			                <a th:unless="${favoritesPage.last}"
+			                   th:href="@{/myFavorites(page=${favoritesPage.totalPages - 1})}"
+			                   class="page-link nagoyameshi-page-link">&gt;&gt;</a>
+			            </li>
+			        </ul>
+			    </nav>
+			</div>
 
-                        <!-- 次へ -->
-                        <li class="page-item">
-                            <span th:if="${favoritesPage.last}" class="page-link disabled">&gt;</span>
-                            <a th:unless="${favoritesPage.last}"
-                               th:href="@{/myFavorites(page=${favoritesPage.number + 1})}"
-                               class="page-link">&gt;</a>
-                        </li>
-
-                        <!-- 最後へ -->
-                        <li class="page-item">
-                            <span th:if="${favoritesPage.last}" class="page-link disabled">&gt;&gt;</span>
-                            <a th:unless="${favoritesPage.last}"
-                               th:href="@{/myFavorites(page=${favoritesPage.totalPages - 1})}"
-                               class="page-link">&gt;&gt;</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+			
+			
         </div>
     </main>
 

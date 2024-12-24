@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="ja">
+<head>
+    <!-- 共通メタ情報 -->
+    <div th:replace="~{fragment :: meta}"></div>
+
+    <!-- 共通スタイルシートなど -->
+    <div th:replace="~{fragment :: styles}"></div>
+
+    <title>会社情報 | NAGOYAMESHI</title>
+</head>
+<body>
+<div class="nagoyameshi-wrapper">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment :: header}"></div>
+
+    <main>
+        <div class="container nagoyameshi-container pb-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <!-- パンくずリスト -->
+                    <nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">会社情報</li>
+                        </ol>
+                    </nav>
+
+                    <h1 class="mb-4 text-center">会社情報</h1>
+
+                    <!-- NAGOYAMESHI セクション -->
+                    <section class="mb-5">
+                        <h3 class="mb-3 text-center">[ NAGOYAMESHI ]</h3>
+                        <p class="nagoyameshi-pre-wrap">
+                            ご利用ありがとうございます。<br>
+                            このサイトは、名古屋の良いところを発信する情報サイト
+                            <strong>「DERA NAGOYA」</strong> から派生した、飲食店案内に特化したサイトです。<br>
+                            「名古屋めし」をはじめとする美味しいグルメ情報を、世界へワクワク発信中！<br>
+                            週末は、当サイトを手がかりに “ひつまぶし” で舌鼓を打ち、<br>
+                            平日は、仕事帰りに “味噌カツ” でパワーチャージ。<br>
+                            そんな、ちょっとウキウキ＆お腹も満たす情報を日々更新中です！<br><br>
+                            ぜひ皆さまも、お腹と心の準備を万全にして「NAGOYAMESHI」ワールドへ飛び込んでくださいね。<br>
+                            まだ名古屋に来たことがない方も、通い慣れた名古屋民の方も、<br>
+                            みんなで楽しめる “うみゃー” な情報を届けられるよう頑張ります！
+                        </p>
+                    </section>
+					
+					<!-- 仕切り線を挿入 -->
+					                   <hr class="my-4" />
+
+                    <!-- 会社概要セクション -->
+                    <section class="mb-5">
+                        <h3 class="mb-3 text-center">会社概要</h3>
+                        <div class="px-3">
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">社名</div>
+                                <div class="col">偽株式会社 NAGOYAMESHI</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">創業</div>
+                                <div class="col">2024年12月25日</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">資本金</div>
+                                <div class="col">200万円</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">本店所在地</div>
+                                <!-- GPTのセンスでアメリカの州にしてみました（例：カリフォルニア） -->
+                                <div class="col">1234 Silicon Avenue, San Jose, California, U.S.A.</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">従業員数</div>
+                                <!-- ユーモア混じりの数字にしています -->
+                                <div class="col">約 8.5人（ネコ含む）</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold">主要取引銀行</div>
+                                <div class="col">
+                                    Bank of Nagoya, <br>
+                                    Nagoya International Savings
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 代表胸像画像 -->
+                    <section class="text-center">
+                        <h4 class="mb-3">代表者</h4>
+                        <!-- ダミー画像パスを指定 -->
+                        <img src="/images/representative.png"
+                             alt="代表者写真"
+                             class="img-fluid"
+                             style="max-width: 200px;">
+                        <p class="mt-2">（※こちらは社長のご厚意により一般公開中。手を合わせるとご利益あるとか？）</p>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <div th:replace="~{fragment :: footer}"></div>
+</div>
+
+<!-- スクリプト -->
+<div th:replace="~{fragment :: scripts}"></div>
+
+</body>
+</html>

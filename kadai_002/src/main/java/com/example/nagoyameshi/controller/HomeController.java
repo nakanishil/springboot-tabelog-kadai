@@ -9,4 +9,10 @@ public class HomeController {
     public String index() {
         return "index";
     }   
+    
+    @GetMapping("/company")
+    public String showCompanyPage() {
+        // templates/company.html を返却
+        return "company";
+    }
 }

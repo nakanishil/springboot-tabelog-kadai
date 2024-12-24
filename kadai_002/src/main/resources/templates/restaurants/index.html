@@ -192,39 +192,105 @@
                     </div>
 
                     <!-- ページネーション -->
-                    <div th:if="${restaurantPage.getTotalPages() > 1}" class="d-flex justify-content-center">
-                        <nav aria-label="飲食店一覧ページ">
-                            <ul class="pagination">
-                                <li class="page-item">
-                                    <span th:if="${restaurantPage.isFirst()}" class="page-link disabled">前</span>
-                                    <a th:unless="${restaurantPage.isFirst()}"
-                                       th:href="@{/restaurants(page=${restaurantPage.getNumber()-1}, keyword=${keyword}, area=${area}, priceRange=${priceRange}, order=${order}, categoryId=${categoryId})}"
-                                       class="page-link samuraitravel-page-link">
-                                        前
-                                    </a>
-                                </li>
-                                <li th:each="i : ${#numbers.sequence(0, restaurantPage.getTotalPages() - 1)}" class="page-item">
-                                    <span th:if="${i == restaurantPage.getNumber()}"
-                                          class="page-link active nagoyameshi-active"
-                                          th:text="${i + 1}">
-                                    </span>
-                                    <a th:unless="${i == restaurantPage.getNumber()}"
-                                       th:href="@{/restaurants(page=${i}, keyword=${keyword}, area=${area}, priceRange=${priceRange}, order=${order}, categoryId=${categoryId})}"
-                                       class="page-link samuraitravel-page-link"
-                                       th:text="${i + 1}">
-                                    </a>
-                                </li>
-                                <li class="page-item">
-                                    <span th:if="${restaurantPage.isLast()}" class="page-link disabled">次</span>
-                                    <a th:unless="${restaurantPage.isLast()}"
-                                       th:href="@{/restaurants(page=${restaurantPage.getNumber()+1}, keyword=${keyword}, area=${area}, priceRange=${priceRange}, order=${order}, categoryId=${categoryId})}"
-                                       class="page-link samuraitravel-page-link">
-                                        次
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
+					<!-- ページネーション -->
+					<div th:if="${restaurantPage.totalPages > 1}" class="d-flex justify-content-center mt-4">
+					    <nav aria-label="飲食店一覧ページ">
+					        <ul class="pagination">
+					            <!-- 最初へ -->
+					            <li class="page-item">
+					                <span th:if="${restaurantPage.first}" class="page-link disabled">&lt;&lt;</span>
+					                <a th:unless="${restaurantPage.first}"
+					                   th:href="@{/restaurants(
+					                     page=0,
+					                     keyword=${keyword},
+					                     area=${area},
+					                     priceRange=${priceRange},
+					                     order=${order},
+					                     categoryId=${categoryId}
+					                   )}"
+					                   class="page-link nagoyameshi-page-link">
+					                    &lt;&lt;
+					                </a>
+					            </li>
+
+					            <!-- 前へ -->
+					            <li class="page-item">
+					                <span th:if="${restaurantPage.first}" class="page-link disabled">&lt;</span>
+					                <a th:unless="${restaurantPage.first}"
+					                   th:href="@{/restaurants(
+					                     page=${restaurantPage.number - 1},
+					                     keyword=${keyword},
+					                     area=${area},
+					                     priceRange=${priceRange},
+					                     order=${order},
+					                     categoryId=${categoryId}
+					                   )}"
+					                   class="page-link nagoyameshi-page-link">
+					                    &lt;
+					                </a>
+					            </li>
+
+					            <!-- ページ番号 -->
+					            <li th:each="i : ${#numbers.sequence(0, restaurantPage.totalPages - 1)}" class="page-item">
+					                <!-- 現在ページの場合 -->
+					                <span th:if="${i == restaurantPage.number}"
+					                      class="page-link active nagoyameshi-active"
+					                      th:text="${i + 1}">
+					                </span>
+					                <!-- その他のページの場合 -->
+					                <a th:unless="${i == restaurantPage.number}"
+					                   th:href="@{/restaurants(
+					                     page=${i},
+					                     keyword=${keyword},
+					                     area=${area},
+					                     priceRange=${priceRange},
+					                     order=${order},
+					                     categoryId=${categoryId}
+					                   )}"
+					                   class="page-link nagoyameshi-page-link"
+					                   th:text="${i + 1}">
+					                </a>
+					            </li>
+
+					            <!-- 次へ -->
+					            <li class="page-item">
+					                <span th:if="${restaurantPage.last}" class="page-link disabled">&gt;</span>
+					                <a th:unless="${restaurantPage.last}"
+					                   th:href="@{/restaurants(
+					                     page=${restaurantPage.number + 1},
+					                     keyword=${keyword},
+					                     area=${area},
+					                     priceRange=${priceRange},
+					                     order=${order},
+					                     categoryId=${categoryId}
+					                   )}"
+					                   class="page-link nagoyameshi-page-link">
+					                    &gt;
+					                </a>
+					            </li>
+
+					            <!-- 最後へ -->
+					            <li class="page-item">
+					                <span th:if="${restaurantPage.last}" class="page-link disabled">&gt;&gt;</span>
+					                <a th:unless="${restaurantPage.last}"
+					                   th:href="@{/restaurants(
+					                     page=${restaurantPage.totalPages - 1},
+					                     keyword=${keyword},
+					                     area=${area},
+					                     priceRange=${priceRange},
+					                     order=${order},
+					                     categoryId=${categoryId}
+					                   )}"
+					                   class="page-link nagoyameshi-page-link">
+					                    &gt;&gt;
+					                </a>
+					            </li>
+					        </ul>
+					    </nav>
+					</div>
+
+					
+					
                 </div>
                 <!-- /メインコンテンツ -->
 

@@ -40,6 +40,7 @@
                               <!-- 未ログインであれば表示する -->
                               <li class="nav-item" sec:authorize="isAnonymous()">
                                   <a class="nav-link" th:href="@{/login}">ログイン</a>
+								 
                               </li>                                                      
                       
                               <!-- ログイン済みであれば表示する --> 
@@ -50,6 +51,7 @@
           
                                   <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownGeneral"> 
 									<!-- 会員情報 -->
+									<a class="dropdown-item nagoyameshi-dropdown-item" th:href="@{/restaurants}">店舗一覧</a>
 									<a class="dropdown-item nagoyameshi-dropdown-item" th:href="@{/user}">会員情報</a>
 									  
 									<!-- 予約一覧 有料会員 ROLE_PAYING_MEMBERのみ-->

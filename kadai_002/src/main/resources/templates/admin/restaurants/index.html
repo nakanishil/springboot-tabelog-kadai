@@ -58,7 +58,7 @@
                                         <td th:text="${restaurant.getPostalCode()}"></td>
                                         <td th:text="${restaurant.getAddress()}"></td>
                                         <td th:text="${restaurant.getPhoneNumber()}"></td>
-                                        <td><a th:href="@{/admin/restaurants/__${restaurant.getId()}__}">詳細</a></td> 
+                                        <td><a th:href="@{/restaurants/__${restaurant.getId()}__}">詳細</a></td> 
 										<td><a th:href="@{/admin/restaurants/__${restaurant.getId()}__/edit}">編集</a></td>
 										<td><a href="#" class="nagoyameshi-link-danger" data-bs-toggle="modal" th:data-bs-target="${'#deleteRestaurantModal' + restaurant.getId()}">削除</a></td>          
 										

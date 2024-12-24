@@ -185,8 +185,8 @@ public class RestaurantController {
             return "redirect:/restaurants";
         }
 
-        // 2. 新着レビュー (enabled=true のみ)
-        List<Review> latestReviews = reviewService.getLatestPublicReviews(id);
+        // 2. 新着レビュー4件取得 (enabled=true のみ)
+        List<Review> latestReviews = reviewService.getLatestPublicReviewsTop4(id);
 
         // 平均評価を計算
         double averageRating = 0.0;
@@ -210,7 +210,6 @@ public class RestaurantController {
             }
         }
 
-        // 4. Modelに詰める
         model.addAttribute("restaurant", restaurant);
         model.addAttribute("latestReviews", latestReviews);
         model.addAttribute("averageRating", averageRating);
