@@ -1,295 +1,321 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <div th:replace="~{fragment :: meta}"></div>
-    <div th:replace="~{fragment :: styles}"></div>
-    <title>店舗詳細</title>
+<div th:replace="~{fragment :: meta}"></div>
+<div th:replace="~{fragment :: styles}"></div>
+<title>店舗詳細</title>
 
-    <!-- FlatpickrのCSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <!-- FlatpickrのJavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <!-- カスタムFlatpickrスクリプト -->
-    <script src="/js/flatpickr.js" defer></script>
-    <!-- Flatpickrの日本語ロケール -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+<!-- FlatpickrのCSS -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- FlatpickrのJavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<!-- カスタムFlatpickrスクリプト -->
+<script src="/js/flatpickr.js" defer></script>
+<!-- Flatpickrの日本語ロケール -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
 </head>
 <body>
-<div class="nagoyameshi-wrapper">
-    <!-- ヘッダー -->
-    <div th:replace="~{fragment :: header}"></div>
+	<div class="nagoyameshi-wrapper">
+		<!-- ヘッダー -->
+		<div th:replace="~{fragment :: header}"></div>
 
-    <main>
-        <div class="container pt-4 pb-5 nagoyameshi-container">
-            <div class="row justify-content-center">
-                <div class="col-xxl-9 col-xl-10 col-lg-11">
+		<main>
+			<div class="container pt-4 pb-5 nagoyameshi-container">
+				<div class="row justify-content-center">
+					<div class="col-xxl-9 col-xl-10 col-lg-11">
 
-                    <nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
-                            <li class="breadcrumb-item"><a th:href="@{/restaurants}">飲食店一覧</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">店舗詳細</li>
-                        </ol>
-                    </nav>
+						<nav class="mb-4" style="--bs-breadcrumb-divider: '>';"
+							aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+								<li class="breadcrumb-item"><a th:href="@{/restaurants}">飲食店一覧</a></li>
+								<li class="breadcrumb-item active" aria-current="page">店舗詳細</li>
+							</ol>
+						</nav>
 
-                    <!-- 店舗名 + ハートアイコン -->
-                    <h1 class="mb-4 text-center d-flex align-items-center justify-content-center"
-                        style="gap: 8px;">
+						<!-- 店舗名 + ハートアイコン -->
+						<h1
+							class="mb-4 text-center d-flex align-items-center justify-content-center"
+							style="gap: 8px;">
 
-                        <!-- 有料会員のみ表示 -->
-                        <span sec:authorize="hasRole('ROLE_PAYING_MEMBER')">
+							<!-- 有料会員のみ表示 -->
+							<span sec:authorize="hasRole('ROLE_PAYING_MEMBER')"> <!-- 登録済み (favoriteRegistered==true) → ピンクハート(♥) -->
+								<th:block th:if="${favoriteRegistered}">
+									<form
+										th:action="@{/myFavorites/{favoriteId}/delete(favoriteId=${favoriteId})}"
+										method="post" style="display: inline;">
+										<!-- CSRF対策 -->
+										<input type="hidden" th:name="${_csrf.parameterName}"
+											th:value="${_csrf.token}">
 
-                            <!-- 登録済み (favoriteRegistered==true) → ピンクハート(♥) -->
-                            <th:block th:if="${favoriteRegistered}">
-                                <form th:action="@{/myFavorites/{favoriteId}/delete(favoriteId=${favoriteId})}"
-                                      method="post"
-                                      style="display:inline;">
-                                    <!-- CSRF対策 -->
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+										<!-- 【重要】詳細から削除された場合 → returnTo=detail -->
+										<input type="hidden" name="returnTo" value="detail" />
 
-                                    <!-- 【重要】詳細から削除された場合 → returnTo=detail -->
-                                    <input type="hidden" name="returnTo" value="detail" />
+										<button type="submit" class="btn btn-link p-0"
+											style="text-decoration: none; color: #e83e8c; font-size: 1.8rem;">
+											♥</button>
+									</form>
+								</th:block> <!-- 未登録なら白ハート(♡) --> <th:block
+									th:unless="${favoriteRegistered}">
+									<form th:action="@{/myFavorites}" method="post"
+										th:object="${favoriteForm}" style="display: inline;">
+										<input type="hidden" th:name="${_csrf.parameterName}"
+											th:value="${_csrf.token}">
 
-                                    <button type="submit"
-                                            class="btn btn-link p-0"
-                                            style="text-decoration:none; color:#e83e8c; font-size:1.8rem;">
-                                        ♥
-                                    </button>
-                                </form>
-                            </th:block>
+										<!-- レストランIDを送信 -->
+										<input type="hidden" name="restaurantId"
+											th:value="${restaurant.id}">
+										<!-- returnTo=detail は不要(追加画面はない)が、付けてもよい -->
+										<!-- <input type="hidden" name="returnTo" value="detail" /> -->
 
-                            <!-- 未登録なら白ハート(♡) -->
-                            <th:block th:unless="${favoriteRegistered}">
-                                <form th:action="@{/myFavorites}"
-                                      method="post"
-                                      th:object="${favoriteForm}"
-                                      style="display:inline;">
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+										<button type="submit" class="btn btn-link p-0"
+											style="text-decoration: none; font-size: 1.8rem;">♡
+										</button>
+									</form>
+								</th:block>
+							</span>
 
-                                    <!-- レストランIDを送信 -->
-                                    <input type="hidden" name="restaurantId" th:value="${restaurant.id}">
-                                    <!-- returnTo=detail は不要(追加画面はない)が、付けてもよい -->
-                                    <!-- <input type="hidden" name="returnTo" value="detail" /> -->
+							<!-- 店舗名表示 -->
+							<span th:text="${restaurant.getName()}"></span>
+						</h1>
 
-                                    <button type="submit"
-                                            class="btn btn-link p-0"
-                                            style="text-decoration:none; font-size:1.8rem;">
-                                        ♡
-                                    </button>
-                                </form>
-                            </th:block>
-                        </span>
+						<div th:if="${errorMessage}" class="alert alert-danger">
+							<span th:text="${errorMessage}"></span>
+						</div>
 
-                        <!-- 店舗名表示 -->
-                        <span th:text="${restaurant.getName()}"></span>
-                    </h1>
+						<!-- 画像表示 -->
+						<div class="mb-4">
+							<img th:if="${restaurant.getImageName()}"
+								th:src="@{/storage/__${restaurant.getImageName()}__}"
+								class="nagoyameshi-restaurant-image" alt="店舗画像"> <img
+								th:unless="${restaurant.getImageName()}"
+								th:src="@{/images/noImage.png}"
+								class="nagoyameshi-restaurant-image" alt="NO IMAGE">
+						</div>
 
-                    <div th:if="${errorMessage}" class="alert alert-danger">
-                        <span th:text="${errorMessage}"></span>
-                    </div>
+						<!-- 店舗情報 -->
+						<div class="container">
+							<div class="row align-items-stretch">
+								<div class="col-lg-8 container mb-4">
+									<div class="row pb-2 mb-2 border-bottom">
+										<div class="col-4">
+											<span class="fw-bold">説明</span>
+										</div>
+										<div class="col">
+											<span class="nagoyameshi-pre-wrap"
+												th:text="${restaurant.getDescription()}"></span>
+										</div>
+									</div>
 
-                    <!-- 画像表示 -->
-                    <div class="mb-4">
-                        <img th:if="${restaurant.getImageName()}"
-                             th:src="@{/storage/__${restaurant.getImageName()}__}"
-                             class="nagoyameshi-restaurant-image" alt="店舗画像">
-                        <img th:unless="${restaurant.getImageName()}"
-                             th:src="@{/images/noImage.png}"
-                             class="nagoyameshi-restaurant-image" alt="NO IMAGE">
-                    </div>
+									<div class="row pb-2 mb-2 border-bottom">
+										<div class="col-4">
+											<span class="fw-bold">定休日</span>
+										</div>
+										<div class="col">
+											<span class="nagoyameshi-pre-wrap"
+												th:text="${restaurant.getRegularClosingDay()}"></span>
+										</div>
+									</div>
 
-                    <!-- 店舗情報 -->
-                    <div class="container">
-                        <div class="row align-items-stretch">
-                            <div class="col-lg-8 container mb-4">
-                                <div class="row pb-2 mb-2 border-bottom">
-                                    <div class="col-4">
-                                        <span class="fw-bold">説明</span>
-                                    </div>
-                                    <div class="col">
-                                        <span class="nagoyameshi-pre-wrap"
-                                              th:text="${restaurant.getDescription()}"></span>
-                                    </div>
-                                </div>
-                                <div class="row pb-2 mb-2 border-bottom">
-                                    <div class="col-4">
-                                        <span class="fw-bold">価格帯</span>
-                                    </div>
-                                    <div class="col">
-                                        <span th:text="${#numbers.formatInteger(restaurant.getPriceRange(), 1, 'COMMA') + '円～/セットメニュー'}"></span>
-                                    </div>
-                                </div>
-                                <div class="row pb-2 mb-2 border-bottom">
-                                    <div class="col-4">
-                                        <span class="fw-bold">席数</span>
-                                    </div>
-                                    <div class="col">
-                                        <span th:text="${restaurant.getNumOfSeats() + '席'}"></span>
-                                    </div>
-                                </div>
-                                <div class="row pb-2 mb-2 border-bottom">
-                                    <div class="col-4">
-                                        <span class="fw-bold">郵便番号</span>
-                                    </div>
-                                    <div class="col">
-                                        <span th:text="${restaurant.getPostalCode()}"></span>
-                                    </div>
-                                </div>
-                                <div class="row pb-2 mb-2 border-bottom">
-                                    <div class="col-4">
-                                        <span class="fw-bold">住所</span>
-                                    </div>
-                                    <div class="col">
-                                        <span th:text="${restaurant.getAddress()}"></span>
-                                    </div>
-                                </div>
-                                <div class="row pb-2 mb-2 border-bottom">
-                                    <div class="col-4">
-                                        <span class="fw-bold">電話番号</span>
-                                    </div>
-                                    <div class="col">
-                                        <span th:text="${restaurant.getPhoneNumber()}"></span>
-                                    </div>
-                                </div>
-                            </div>
+									<div class="row pb-2 mb-2 border-bottom">
+										<div class="col-4">
+											<span class="fw-bold">営業時間</span>
+										</div>
+										<div class="col">
+											<span class="nagoyameshi-pre-wrap"
+												th:text="${restaurant.getBusinessHours()}"></span>
+										</div>
+									</div>
 
-                            <!-- 全ユーザ共通カラム -->
-                            <div class="col-lg-4 px-0 ps-lg-4">
-                                <!-- 未ログインの場合 -->
-                                <div sec:authorize="isAnonymous()">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <p class="card-text">
-                                                予約機能は
-                                                <a th:href="@{/login}">ログイン</a>（有料会員）が必要です。
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <p class="card-text">
-                                                レビュー投稿機能は
-                                                <a th:href="@{/login}">ログイン</a>（有料会員）が必要です。
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <!-- 無料会員の場合 -->
-                                <div sec:authorize="hasRole('ROLE_FREE_MEMBER')">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <p class="card-text">予約は有料会員の機能です。</p>
-                                        </div>
-                                    </div>
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <p class="card-text">レビュー投稿機能は有料会員のみです。</p>
-                                        </div>
-                                    </div>
-                                </div>
+									<div class="row pb-2 mb-2 border-bottom">
+										<div class="col-4">
+											<span class="fw-bold">価格帯</span>
+										</div>
+										<div class="col">
+											<span
+												th:text="${#numbers.formatInteger(restaurant.getPriceRange(), 1, 'COMMA') + '円～/セットメニュー'}"></span>
+										</div>
+									</div>
+									<div class="row pb-2 mb-2 border-bottom">
+										<div class="col-4">
+											<span class="fw-bold">席数</span>
+										</div>
+										<div class="col">
+											<span th:text="${restaurant.getNumOfSeats() + '席'}"></span>
+										</div>
+									</div>
+									<div class="row pb-2 mb-2 border-bottom">
+										<div class="col-4">
+											<span class="fw-bold">郵便番号</span>
+										</div>
+										<div class="col">
+											<span th:text="${restaurant.getPostalCode()}"></span>
+										</div>
+									</div>
+									<div class="row pb-2 mb-2 border-bottom">
+										<div class="col-4">
+											<span class="fw-bold">住所</span>
+										</div>
+										<div class="col">
+											<span th:text="${restaurant.getAddress()}"></span>
+										</div>
+									</div>
+									<div class="row pb-2 mb-2 border-bottom">
+										<div class="col-4">
+											<span class="fw-bold">電話番号</span>
+										</div>
+										<div class="col">
+											<span th:text="${restaurant.getPhoneNumber()}"></span>
+										</div>
+									</div>
+								</div>
 
-                                <!-- 有料会員の場合 -->
-                                <div sec:authorize="hasRole('ROLE_PAYING_MEMBER')">
-                                    <div class="card mb-2">
-                                        <div class="card-body">
-                                            <form method="post"
-                                                  th:action="@{/restaurants/__${restaurant.getId()}__/reservations/input}"
-                                                  th:object="${reservationInputForm}">
-                                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                                <div class="form-group mb-2">
-                                                    <label for="appointmentDate" class="col-form-label text-md-left fw-bold">
-                                                        予約日時
-                                                    </label>
-                                                    <input type="datetime-local" id="appointmentDate"
-                                                           th:field="*{appointmentDate}"
-                                                           placeholder="日時を選択してください">
-                                                    <div th:if="${#fields.hasErrors('appointmentDate')}"
-                                                         th:errors="*{appointmentDate}"
-                                                         class="text-danger"></div>
-                                                </div>
-                                                <div class="form-group mb-4">
-                                                    <label for="numOfPeople" class="col-form-label text-md-left fw-bold">
-                                                        予約人数
-                                                    </label>
-                                                    <input type="number" th:field="*{numOfPeople}"
-                                                           placeholder="人数を入力してください" min="1" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <button type="submit"
-                                                            class="btn text-white shadow-sm w-100 nagoyameshi-btn">
-                                                        予約
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
+								<!-- 全ユーザ共通カラム -->
+								<div class="col-lg-4 px-0 ps-lg-4">
+									<!-- 未ログインの場合 -->
+									<div sec:authorize="isAnonymous()">
+										<div class="card">
+											<div class="card-body">
+												<p class="card-text">
+													予約機能は <a th:href="@{/login}">ログイン</a>（有料会員）が必要です。
+												</p>
+											</div>
+										</div>
+										<div class="card">
+											<div class="card-body">
+												<p class="card-text">
+													レビュー投稿機能は <a th:href="@{/login}">ログイン</a>（有料会員）が必要です。
+												</p>
+											</div>
+										</div>
+									</div>
 
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <button type="button"
-                                                    class="btn text-white shadow-sm w-100 nagoyameshi-btn"
-                                                    th:onclick="'location.href=\'/restaurants/' + ${restaurant.getId()} + '/reviews/form\''">
-                                                レビューを投稿
-                                            </button>
-                                        </div>
-                                    </div>
+									<!-- 無料会員の場合 -->
+									<div sec:authorize="hasRole('ROLE_FREE_MEMBER')">
+										<div class="card">
+											<div class="card-body">
+												<p class="card-text">予約は有料会員の機能です。</p>
+											</div>
+										</div>
+										<div class="card">
+											<div class="card-body">
+												<p class="card-text">レビュー投稿機能は有料会員のみです。</p>
+											</div>
+										</div>
+									</div>
 
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <button type="button"
-                                                    class="btn text-white shadow-sm w-100 nagoyameshi-btn"
-                                                    th:onclick="'location.href=\'/restaurants/' + ${restaurant.getId()} + '/reviews\''">
-                                                レビュー 一覧
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+									<!-- 有料会員の場合 -->
+									<div sec:authorize="hasRole('ROLE_PAYING_MEMBER')">
+										<div class="card mb-2">
+											<div class="card-body">
+												<form method="post"
+													th:action="@{/restaurants/__${restaurant.getId()}__/reservations/input}"
+													th:object="${reservationInputForm}">
+													<input type="hidden" th:name="${_csrf.parameterName}"
+														th:value="${_csrf.token}">
+													<div class="form-group mb-2">
+														<label for="appointmentDate"
+															class="col-form-label text-md-left fw-bold"> 予約日時
+														</label> <input type="datetime-local" id="appointmentDate"
+															th:field="*{appointmentDate}" placeholder="日時を選択してください">
+														<div th:if="${#fields.hasErrors('appointmentDate')}"
+															th:errors="*{appointmentDate}" class="text-danger"></div>
+													</div>
+													<div class="form-group mb-4">
+														<label for="numOfPeople"
+															class="col-form-label text-md-left fw-bold"> 予約人数
+														</label> <input type="number" th:field="*{numOfPeople}"
+															placeholder="人数を入力してください" min="1" required>
+													</div>
+													<div class="form-group">
+														<button type="submit"
+															class="btn text-white shadow-sm w-100 nagoyameshi-btn">
+															予約</button>
+													</div>
+												</form>
+											</div>
+										</div>
 
-                            </div>
-                        </div>
-                    </div>
+										<div class="card">
+											<div class="card-body">
+												<button type="button"
+													class="btn text-white shadow-sm w-100 nagoyameshi-btn"
+													th:onclick="'location.href=\'/restaurants/' + ${restaurant.getId()} + '/reviews/form\''">
+													レビューを投稿</button>
+											</div>
+										</div>
 
-                    <!-- 新着レビューセクション -->
-                    <div class="review-section mt-5">
-                        <h3>新着レビュー</h3>
-                        <div th:if="${averageRating > 0}">
-                            平均評価：
-                            <span class="star-full"
-                                  th:each="i : ${#numbers.sequence(1, flooredRating)}">★</span>
-                            <span class="star-empty"
-                                  th:each="i : ${#numbers.sequence(flooredRating+1, 5)}">☆</span>
-                            <span th:text="${'(' + #numbers.formatDecimal(averageRating,1,1) + '/5)'}"></span>
-                        </div>
+										<div class="card">
+											<div class="card-body">
+												<button type="button"
+													class="btn text-white shadow-sm w-100 nagoyameshi-btn"
+													th:onclick="'location.href=\'/restaurants/' + ${restaurant.getId()} + '/reviews\''">
+													レビュー 一覧</button>
+											</div>
+										</div>
+									</div>
 
-                        <div th:if="${latestReviews != null and #lists.size(latestReviews) > 0}">
-                            <div class="card mb-3" th:each="review : ${latestReviews}">
-                                <div class="card-body">
-                                    <div>
-                                        <span class="star-full"
-                                              th:each="i : ${#numbers.sequence(1, review.point)}">★</span>
-                                        <span class="star-empty"
-                                              th:each="i : ${#numbers.sequence(review.point+1, 5)}">☆</span>
-                                        <span th:text="${'(' + review.point + '/5)'}"></span>
-                                    </div>
-                                    <p th:text="${review.reviewComment}"></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div th:if="${latestReviews == null or #lists.size(latestReviews) == 0}" class="text-muted">
-                            <p>まだレビューがありません。</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+								</div>
+							</div>
+						</div>
 
-    <!-- フッター -->
-    <div th:replace="~{fragment :: footer}"></div>
-</div>
+						<!-- 新着レビューセクション -->
+						<div class="review-section mt-5">
+							<h3>新着レビュー</h3>
+							<div th:if="${averageRating > 0}">
+							  平均評価：
+							  <!-- ★ を flooredRating 個 -->
+							  <span class="star-full"
+							        th:each="i : ${#numbers.sequence(1, T(java.lang.Math).min(5, flooredRating))}">
+							    ★
+							  </span>
+							  
+							  <!-- ☆ を (5 - flooredRating) 個 (ただしマイナスにならないようにMath.max(0, 5 - flooredRating)) -->
+							  <span class="star-empty"
+							        th:each="i : ${#numbers.sequence(1, T(java.lang.Math).max(0, 5 - flooredRating))}">
+							    ☆
+							  </span>
 
-<div th:replace="~{fragment :: scripts}"></div>
+							  <span th:text="${'(' + #numbers.formatDecimal(averageRating,1,1) + '/5)'}"></span>
+							</div>
+							<div
+								th:if="${latestReviews != null and #lists.size(latestReviews) > 0}">
+								<div class="card mb-3" th:each="review : ${latestReviews}">
+									<div class="card-body">
+										<div>
+											<!-- ★ を review.point 回表示 -->
+											<span class="star-full"
+											      th:each="i : ${#numbers.sequence(1, review.point)}">★</span>
+
+											<!-- (5 - point) が 1以上のときだけ空星を回す -->
+											<th:block th:if="${review.point < 5}">
+											    <span class="star-empty"
+											          th:each="i : ${#numbers.sequence(1, 5 - review.point)}">☆
+											    </span>
+											</th:block>
+										</div>
+										<p th:text="${review.reviewComment}"></p>
+									</div>
+								</div>
+							</div>
+							<div
+								th:if="${latestReviews == null or #lists.size(latestReviews) == 0}"
+								class="text-muted">
+								<p>まだレビューがありません。</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<!-- フッター -->
+		<div th:replace="~{fragment :: footer}"></div>
+	</div>
+
+	<div th:replace="~{fragment :: scripts}"></div>
 </body>
 </html>

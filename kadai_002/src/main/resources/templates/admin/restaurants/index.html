@@ -1,141 +1,300 @@
 <!DOCTYPE html>
 <html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <head>
-		<!-- meta -->
-        <div th:replace="~{fragment :: meta}"></div>     
-        <!-- Boostrap, Google Fonts-->     
-        <div th:replace="~{fragment :: styles}"></div>
-        
-        <title>【管理者ページ】飲食店一覧</title>       
-    </head>
-    <body>
-        <div class="nagoyameshi-wrapper">
-            <!-- ヘッダー -->
-             <div th:replace="~{fragment :: header}"></div>
-            
-            <main>
-                <div class="container pt-4 pb-5 nagoyameshi-container">
-                    <div class="row justify-content-center">
-                        <div class="col-xxl-9 col-xl-10 col-lg-11">
-                            
-                            <h1 class="mb-4 text-center">飲食店一覧</h1>   
-							
-							<div class="d-flex justify-content-between align-items-end flex-wrap">
-								<!-- 検索フォーム -->
-							    <form method="get" th:action="@{/admin/restaurants}" class="mb-3">
-							        <div class="input-group">
-							            <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="飲食店名">
-							            <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button> 
-							        </div>               
-							    </form>  
-								<!-- 検索フォーム終わり-->    
-								<p>店舗数：<span th:text="${totalElements}">0</span>件</p>                           
-                                <a th:href="@{/admin/restaurants/register}" class="btn text-white shadow-sm mb-3 nagoyameshi-btn">登録</a>
-                            </div>
-							
-							<!-- AdminRestaurantController create()メソッド-->
-							<div th:if="${successMessage}" class="alert alert-info">
-							    <span th:text="${successMessage}"></span>
-							</div>  
-                            
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">飲食店番号</th>
-                                        <th scope="col">飲食店名</th>
-                                        <th scope="col">郵便番号</th>
-                                        <th scope="col">住所</th>
-                                        <th scope="col">電話番号</th>
-                                        <th scope="col"></th>
-										<th scope="col"></th>                                        
-										<th scope="col"></th>                                        
-                                    </tr>
-                                </thead>   
-                                <tbody>                                                     
-                                    <tr th:each="restaurant : ${restaurantsPage}">
-                                        <td th:text="${restaurant.getId()}"></td>
-                                        <td th:text="${restaurant.getName()}"></td>
-                                        <td th:text="${restaurant.getPostalCode()}"></td>
-                                        <td th:text="${restaurant.getAddress()}"></td>
-                                        <td th:text="${restaurant.getPhoneNumber()}"></td>
-                                        <td><a th:href="@{/restaurants/__${restaurant.getId()}__}">詳細</a></td> 
-										<td><a th:href="@{/admin/restaurants/__${restaurant.getId()}__/edit}">編集</a></td>
-										<td><a href="#" class="nagoyameshi-link-danger" data-bs-toggle="modal" th:data-bs-target="${'#deleteRestaurantModal' + restaurant.getId()}">削除</a></td>          
-										
-										<!-- 削除用モーダル -->
-										<div class="modal fade" th:id="${'deleteRestaurantModal' + restaurant.getId()}" tabindex="-1" th:aria-labelledby="${'deleteRestaurantModalLabel' + restaurant.getId()}">
-	                                      <div class="modal-dialog">
-	                                          <div class="modal-content">
-	                                              <div class="modal-header">
-	                                                  <h5 class="modal-title" th:id="${'deleteRestaurantModalLabel' + restaurant.getId()}" th:text="${restaurant.getName() + 'を削除してもよろしいですか？'}"></h5>
-	                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
-	                                              </div>
-	                                              <div class="modal-footer">
-	                                                  <form method="post"th:action="@{/admin/restaurants/__${restaurant.getId()}__/delete}">
-	                                                      <button type="submit" class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>
-	                                                  </form>
-	                                              </div>
-	                                          </div>
-	                                      </div>
-	                                  </div>     
-                                    </tr>                                      
-                                </tbody>
-                            </table>  
-							
-							<!-- ページネーション -->
-							<div th:if="${restaurantsPage.getTotalPages() > 1}" class="d-flex justify-content-center">
-							    <nav aria-label="飲食店一覧ページ">
-							        <ul class="pagination">
-										<!-- １ページ目に戻る -->
-										<li class="page-item">
-											<span th:if="${restaurantsPage.isFirst()}" class="page-link disabled">&lt;&lt;</span>
-											<a th:unless="${restaurantsPage.isFirst()}"
-											 th:href="@{/admin/restaurants(page = 0, keyword = ${keyword})}"
-											 class="page-link nagoyameshi-page-link">&lt;&lt;</a>
-										</li>
-										<!-- 前のページに戻る-->
-							            <li class="page-item">
-							                <span th:if="${restaurantsPage.isFirst()}" class="page-link disabled">&lt;</span>
-											<a th:unless="${restaurantsPage.isFirst()}"
-											 th:href="@{/admin/restaurants(page = ${restaurantsPage.getNumber() - 1}, keyword = ${keyword})}"
-											 class="page-link nagoyameshi-page-link">&lt;</a>
-							            </li>
-										<!-- ページ番号ボタン -->
-							            <li th:each="i : ${#numbers.sequence(0, restaurantsPage.getTotalPages() - 1)}" class="page-item">
-							                <span th:if="${i == restaurantsPage.getNumber()}" class="page-link active nagoyameshi-active" th:text="${i + 1}"></span>
-							                <a th:unless="${i == restaurantsPage.getNumber()}"
-											 th:href="@{/admin/restaurants(page = ${i}, keyword = ${keyword})}"
-											 class="page-link nagoyameshi-page-link" th:text="${i + 1}"></a>
-							            </li>
-										<!-- 次のページへ進む -->
-							            <li class="page-item">                        
-							                <span th:if="${restaurantsPage.isLast()}" class="page-link disabled">&gt;</span>
-											<a th:unless="${restaurantsPage.isLast()}"
-											 th:href="@{/admin/restaurants(page = ${restaurantsPage.getNumber() + 1}, keyword = ${keyword})}"
-											 class="page-link nagoyameshi-page-link">&gt;</a>
-							            </li>
-										<!-- 最後のページへ進む -->
-										<li class="page-item">                        
-							                <span th:if="${restaurantsPage.isLast()}" class="page-link disabled">&gt;&gt;</span>
-											<a th:unless="${restaurantsPage.isLast()}"
-											 th:href="@{/admin/restaurants(page = ${restaurantsPage.getTotalPages() - 1}, keyword = ${keyword})}"
-											 class="page-link nagoyameshi-page-link">&gt;&gt;</a>
-							            </li>
-							        </ul>
-							    </nav> 
-							</div>    
-							<!-- ページネーション 終了-->
-							                                          
+
+<head>
+  <!-- meta -->
+  <div th:replace="~{fragment :: meta}"></div>
+  <!-- Boostrap, Google Fonts-->
+  <div th:replace="~{fragment :: styles}"></div>
+
+  <title>【管理者ページ】飲食店一覧</title>
+</head>
+
+<body>
+  <div class="nagoyameshi-wrapper">
+    <!-- ヘッダー -->
+    <div th:replace="~{fragment :: header}"></div>
+
+    <main>
+      <div class="container pt-4 pb-5 nagoyameshi-container">
+        <div class="row justify-content-center">
+          <div class="col-xxl-9 col-xl-10 col-lg-11">
+
+            <h1 class="mb-4 text-center">飲食店一覧</h1>
+
+            <div class="d-flex justify-content-between align-items-end flex-wrap">
+              <!-- 検索フォーム -->
+              <form method="get" th:action="@{/admin/restaurants}" class="mb-3">
+                <div class="input-group">
+                  <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="飲食店名">
+                  <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button>
+                </div>
+              </form>
+              <!-- 検索フォーム終わり-->
+              <p>店舗数：<span th:text="${totalElements}">0</span>件</p>
+              <a th:href="@{/admin/restaurants/register}" class="btn text-white shadow-sm mb-3 nagoyameshi-btn">登録</a>
+              <!-- 2024-12-25 SAMURAI Start -->
+              <form method="get" th:action="@{/admin/restaurants/csv}" class="mb-3">
+                <div class="input-group">
+                  <input type="hidden" class="form-control" name="keyword2"><!-- 検索条件がある場合、検索条件をコントローラーに渡す -->
+                  <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">CSV出力</button>
+                </div>
+              </form>
+              <!-- 2024-12-25 SAMURAI End -->
+            </div>
+
+            <!-- AdminRestaurantController create()メソッド-->
+            <div th:if="${successMessage}" class="alert alert-info">
+              <span th:text="${successMessage}"></span>
+            </div>
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">飲食店番号</th>
+                  <th scope="col">飲食店名</th>
+                  <th scope="col">郵便番号</th>
+                  <th scope="col">住所</th>
+                  <th scope="col">電話番号</th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="restaurant : ${restaurantsPage}">
+                  <td th:text="${restaurant.getId()}"></td>
+                  <td th:text="${restaurant.getName()}"></td>
+                  <td th:text="${restaurant.getPostalCode()}"></td>
+                  <td th:text="${restaurant.getAddress()}"></td>
+                  <td th:text="${restaurant.getPhoneNumber()}"></td>
+                  <td><a th:href="@{/restaurants/__${restaurant.getId()}__}">詳細</a></td>
+                  <td><a th:href="@{/admin/restaurants/__${restaurant.getId()}__/edit}">編集</a></td>
+                  <td><a href="#" class="nagoyameshi-link-danger" data-bs-toggle="modal"
+                      th:data-bs-target="${'#deleteRestaurantModal' + restaurant.getId()}">削除</a></td>
+
+                  <!-- 削除用モーダル -->
+                  <div class="modal fade" th:id="${'deleteRestaurantModal' + restaurant.getId()}" tabindex="-1"
+                    th:aria-labelledby="${'deleteRestaurantModalLabel' + restaurant.getId()}">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" th:id="${'deleteRestaurantModalLabel' + restaurant.getId()}"
+                            th:text="${restaurant.getName() + 'を削除してもよろしいですか？'}"></h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
                         </div>
+                        <div class="modal-footer">
+                          <form method="post" th:action="@{/admin/restaurants/__${restaurant.getId()}__/delete}">
+                            <button type="submit" class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>
+                          </form>
+                        </div>
+                      </div>
                     </div>
-                </div>              
-            </main>
-            
-            <!-- フッター -->
-            <div th:replace="~{fragment :: footer}"></div>
-        </div>    
-        
-        <!-- Bootstrap -->
-		<div th:replace="~{fragment :: scripts}"></div>
-    </body>
+                  </div>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ページネーション -->
+            <div th:if="${restaurantsPage.getTotalPages() > 1}" class="d-flex justify-content-center">
+              <nav aria-label="飲食店一覧ページ">
+                <ul class="pagination">
+                  <!-- １ページ目に戻る -->
+                  <li class="page-item">
+                    <span th:if="${restaurantsPage.isFirst()}" class="page-link disabled">&lt;&lt;</span>
+                    <a th:unless="${restaurantsPage.isFirst()}"
+                      th:href="@{/admin/restaurants(page = 0, keyword = ${keyword})}"
+                      class="page-link nagoyameshi-page-link">&lt;&lt;</a>
+                  </li>
+                  <!-- 前のページに戻る-->
+                  <li class="page-item">
+                    <span th:if="${restaurantsPage.isFirst()}" class="page-link disabled">&lt;</span>
+                    <a th:unless="${restaurantsPage.isFirst()}"
+                      th:href="@{/admin/restaurants(page = ${restaurantsPage.getNumber() - 1}, keyword = ${keyword})}"
+                      class="page-link nagoyameshi-page-link">&lt;</a>
+                  </li>
+                  <!-- ページ番号ボタン -->
+                  <li th:each="i : ${#numbers.sequence(0, restaurantsPage.getTotalPages() - 1)}" class="page-item">
+                    <span th:if="${i == restaurantsPage.getNumber()}" class="page-link active nagoyameshi-active"
+                      th:text="${i + 1}"></span>
+                    <a th:unless="${i == restaurantsPage.getNumber()}"
+                      th:href="@{/admin/restaurants(page = ${i}, keyword = ${keyword})}"
+                      class="page-link nagoyameshi-page-link" th:text="${i + 1}"></a>
+                  </li>
+                  <!-- 次のページへ進む -->
+                  <li class="page-item">
+                    <span th:if="${restaurantsPage.isLast()}" class="page-link disabled">&gt;</span>
+                    <a th:unless="${restaurantsPage.isLast()}"
+                      th:href="@{/admin/restaurants(page = ${restaurantsPage.getNumber() + 1}, keyword = ${keyword})}"
+                      class="page-link nagoyameshi-page-link">&gt;</a>
+                  </li>
+                  <!-- 最後のページへ進む -->
+                  <li class="page-item">
+                    <span th:if="${restaurantsPage.isLast()}" class="page-link disabled">&gt;&gt;</span>
+                    <a th:unless="${restaurantsPage.isLast()}"
+                      th:href="@{/admin/restaurants(page = ${restaurantsPage.getTotalPages() - 1}, keyword = ${keyword})}"
+                      class="page-link nagoyameshi-page-link">&gt;&gt;</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+            <!-- ページネーション 終了-->
+
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- フッター -->
+    <div th:replace="~{fragment :: footer}"></div>
+  </div>
+
+  <!-- Bootstrap -->
+  <div th:replace="~{fragment :: scripts}"></div>
+  <!-- jQuery&CSV用オリジナルJSファイルへのリンク 2024-12-25 SAMURAI -->
+  <div th:replace="~{fragment :: csvscripts}"></div>
+</body>
+
 </html>
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">-->
+<!--    <head>-->
+<!--		 meta -->
+<!--        <div th:replace="~{fragment :: meta}"></div>     -->
+<!--         Boostrap, Google Fonts     -->
+<!--        <div th:replace="~{fragment :: styles}"></div>-->
+        
+<!--        <title>【管理者ページ】飲食店一覧</title>       -->
+<!--    </head>-->
+<!--    <body>-->
+<!--        <div class="nagoyameshi-wrapper">-->
+<!--             ヘッダー -->
+<!--             <div th:replace="~{fragment :: header}"></div>-->
+            
+<!--            <main>-->
+<!--                <div class="container pt-4 pb-5 nagoyameshi-container">-->
+<!--                    <div class="row justify-content-center">-->
+<!--                        <div class="col-xxl-9 col-xl-10 col-lg-11">-->
+                            
+<!--                            <h1 class="mb-4 text-center">飲食店一覧</h1>   -->
+							
+<!--							<div class="d-flex justify-content-between align-items-end flex-wrap">-->
+<!--								 検索フォーム -->
+<!--							    <form method="get" th:action="@{/admin/restaurants}" class="mb-3">-->
+<!--							        <div class="input-group">-->
+<!--							            <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="飲食店名">-->
+<!--							            <button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button> -->
+<!--							        </div>               -->
+<!--							    </form>  -->
+<!--								 検索フォーム終わり    -->
+<!--								<p>店舗数：<span th:text="${totalElements}">0</span>件</p>                           -->
+<!--                                <a th:href="@{/admin/restaurants/register}" class="btn text-white shadow-sm mb-3 nagoyameshi-btn">登録</a>-->
+<!--                            </div>-->
+							
+<!--							 AdminRestaurantController create()メソッド-->
+<!--							<div th:if="${successMessage}" class="alert alert-info">-->
+<!--							    <span th:text="${successMessage}"></span>-->
+<!--							</div>  -->
+                            
+<!--                            <table class="table">-->
+<!--                                <thead>-->
+<!--                                    <tr>-->
+<!--                                        <th scope="col">飲食店番号</th>-->
+<!--                                        <th scope="col">飲食店名</th>-->
+<!--                                        <th scope="col">郵便番号</th>-->
+<!--                                        <th scope="col">住所</th>-->
+<!--                                        <th scope="col">電話番号</th>-->
+<!--                                        <th scope="col"></th>-->
+<!--										<th scope="col"></th>                                        -->
+<!--										<th scope="col"></th>                                        -->
+<!--                                    </tr>-->
+<!--                                </thead>   -->
+<!--                                <tbody>                                                     -->
+<!--                                    <tr th:each="restaurant : ${restaurantsPage}">-->
+<!--                                        <td th:text="${restaurant.getId()}"></td>-->
+<!--                                        <td th:text="${restaurant.getName()}"></td>-->
+<!--                                        <td th:text="${restaurant.getPostalCode()}"></td>-->
+<!--                                        <td th:text="${restaurant.getAddress()}"></td>-->
+<!--                                        <td th:text="${restaurant.getPhoneNumber()}"></td>-->
+<!--                                        <td><a th:href="@{/restaurants/__${restaurant.getId()}__}">詳細</a></td> -->
+<!--										<td><a th:href="@{/admin/restaurants/__${restaurant.getId()}__/edit}">編集</a></td>-->
+<!--										<td><a href="#" class="nagoyameshi-link-danger" data-bs-toggle="modal" th:data-bs-target="${'#deleteRestaurantModal' + restaurant.getId()}">削除</a></td>          -->
+										
+<!--										 削除用モーダル -->
+<!--										<div class="modal fade" th:id="${'deleteRestaurantModal' + restaurant.getId()}" tabindex="-1" th:aria-labelledby="${'deleteRestaurantModalLabel' + restaurant.getId()}">-->
+<!--	                                      <div class="modal-dialog">-->
+<!--	                                          <div class="modal-content">-->
+<!--	                                              <div class="modal-header">-->
+<!--	                                                  <h5 class="modal-title" th:id="${'deleteRestaurantModalLabel' + restaurant.getId()}" th:text="${restaurant.getName() + 'を削除してもよろしいですか？'}"></h5>-->
+<!--	                                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>-->
+<!--	                                              </div>-->
+<!--	                                              <div class="modal-footer">-->
+<!--	                                                  <form method="post"th:action="@{/admin/restaurants/__${restaurant.getId()}__/delete}">-->
+<!--	                                                      <button type="submit" class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>-->
+<!--	                                                  </form>-->
+<!--	                                              </div>-->
+<!--	                                          </div>-->
+<!--	                                      </div>-->
+<!--	                                  </div>     -->
+<!--                                    </tr>                                      -->
+<!--                                </tbody>-->
+<!--                            </table>  -->
+							
+<!--							 ページネーション -->
+<!--							<div th:if="${restaurantsPage.getTotalPages() > 1}" class="d-flex justify-content-center">-->
+<!--							    <nav aria-label="飲食店一覧ページ">-->
+<!--							        <ul class="pagination">-->
+<!--										 １ページ目に戻る -->
+<!--										<li class="page-item">-->
+<!--											<span th:if="${restaurantsPage.isFirst()}" class="page-link disabled">&lt;&lt;</span>-->
+<!--											<a th:unless="${restaurantsPage.isFirst()}"-->
+<!--											 th:href="@{/admin/restaurants(page = 0, keyword = ${keyword})}"-->
+<!--											 class="page-link nagoyameshi-page-link">&lt;&lt;</a>-->
+<!--										</li>-->
+<!--										 前のページに戻る-->
+<!--							            <li class="page-item">-->
+<!--							                <span th:if="${restaurantsPage.isFirst()}" class="page-link disabled">&lt;</span>-->
+<!--											<a th:unless="${restaurantsPage.isFirst()}"-->
+<!--											 th:href="@{/admin/restaurants(page = ${restaurantsPage.getNumber() - 1}, keyword = ${keyword})}"-->
+<!--											 class="page-link nagoyameshi-page-link">&lt;</a>-->
+<!--							            </li>-->
+<!--										 ページ番号ボタン -->
+<!--							            <li th:each="i : ${#numbers.sequence(0, restaurantsPage.getTotalPages() - 1)}" class="page-item">-->
+<!--							                <span th:if="${i == restaurantsPage.getNumber()}" class="page-link active nagoyameshi-active" th:text="${i + 1}"></span>-->
+<!--							                <a th:unless="${i == restaurantsPage.getNumber()}"-->
+<!--											 th:href="@{/admin/restaurants(page = ${i}, keyword = ${keyword})}"-->
+<!--											 class="page-link nagoyameshi-page-link" th:text="${i + 1}"></a>-->
+<!--							            </li>-->
+<!--										 次のページへ進む -->
+<!--							            <li class="page-item">                        -->
+<!--							                <span th:if="${restaurantsPage.isLast()}" class="page-link disabled">&gt;</span>-->
+<!--											<a th:unless="${restaurantsPage.isLast()}"-->
+<!--											 th:href="@{/admin/restaurants(page = ${restaurantsPage.getNumber() + 1}, keyword = ${keyword})}"-->
+<!--											 class="page-link nagoyameshi-page-link">&gt;</a>-->
+<!--							            </li>-->
+<!--										 最後のページへ進む -->
+<!--										<li class="page-item">                        -->
+<!--							                <span th:if="${restaurantsPage.isLast()}" class="page-link disabled">&gt;&gt;</span>-->
+<!--											<a th:unless="${restaurantsPage.isLast()}"-->
+<!--											 th:href="@{/admin/restaurants(page = ${restaurantsPage.getTotalPages() - 1}, keyword = ${keyword})}"-->
+<!--											 class="page-link nagoyameshi-page-link">&gt;&gt;</a>-->
+<!--							            </li>-->
+<!--							        </ul>-->
+<!--							    </nav> -->
+<!--							</div>    -->
+<!--							 ページネーション 終了-->
+							                                          
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>              -->
+<!--            </main>-->
+            
+<!--             フッター -->
+<!--            <div th:replace="~{fragment :: footer}"></div>-->
+<!--        </div>    -->
+        
+<!--         Bootstrap -->
+<!--		<div th:replace="~{fragment :: scripts}"></div>-->
+<!--    </body>-->
+<!--</html>-->

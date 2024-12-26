@@ -29,7 +29,9 @@ public class WebSecurityConfig {
         				"/stripe/webhook",
         				"/password-reset/**",
         				"/reset-password/**",
-        				"/company"
+        				"/company",
+        				"/success",
+        				"/cancel"
         				).permitAll()  // すべてのユーザーにアクセスを許可するURL       
                 .requestMatchers("/admin/**").hasRole("ADMIN")  // 管理者にのみアクセスを許可するURL
                 .anyRequest().authenticated()                   // 上記以外のURLはログインが必要（会員または管理者のどちらでもOK）

@@ -36,9 +36,17 @@
                         </div>
 
                         <h2 th:text="${review.restaurant.name}">店舗名</h2>
-                        <span class="star-full" th:each="i : ${#numbers.sequence(1, review.point)}">★</span>
-                        <span class="star-empty" th:each="i : ${#numbers.sequence(review.point+1, 5)}">☆</span>
-                        <span th:text="${'(' + review.point + '/5)'}"></span>
+						<!-- ★ を review.point 回表示 -->
+						<!-- ★ を review.point 回表示 -->
+						<span class="star-full"
+						      th:each="i : ${#numbers.sequence(1, review.point)}">★</span>
+
+						<!-- (5 - point) が 1以上のときだけ空星を回す -->
+						<th:block th:if="${review.point < 5}">
+						    <span class="star-empty"
+						          th:each="i : ${#numbers.sequence(1, 5 - review.point)}">☆
+						    </span>
+						</th:block>
 
                         <p th:text="${review.reviewComment}"></p>
                         <p>投稿日時：<span th:text="${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm')}"></span></p>

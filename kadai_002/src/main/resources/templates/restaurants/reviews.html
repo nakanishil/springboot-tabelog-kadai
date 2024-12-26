@@ -7,102 +7,108 @@
 <title>レビュー一覧</title>
 </head>
 <body>
-<div class="nagoyameshi-wrapper">
-    <!-- ヘッダー -->
-    <div th:replace="~{fragment :: header}"></div>
+	<div class="nagoyameshi-wrapper">
+		<!-- ヘッダー -->
+		<div th:replace="~{fragment :: header}"></div>
 
-    <main>
-        <div class="container pt-4 pb-5 nagoyameshi-container">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
-                <li class="breadcrumb-item"><a th:href="@{/restaurants}">飲食店一覧</a></li>
-                <li class="breadcrumb-item">
-                    <a th:href="@{/restaurants/{id}(id=${restaurant.id})}">店舗詳細</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">レビュー 一覧</li>
-            </ol>
+		<main>
+			<div class="container pt-4 pb-5 nagoyameshi-container">
+				<ol class="breadcrumb mb-0">
+					<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+					<li class="breadcrumb-item"><a th:href="@{/restaurants}">飲食店一覧</a></li>
+					<li class="breadcrumb-item"><a
+						th:href="@{/restaurants/{id}(id=${restaurant.id})}">店舗詳細</a></li>
+					<li class="breadcrumb-item active" aria-current="page">レビュー 一覧</li>
+				</ol>
 
-            <h1 class="text-center mb-4" th:text="${restaurant.name} + ' のレビュー 一覧'"></h1>
+				<h1 class="text-center mb-4"
+					th:text="${restaurant.name} + ' のレビュー 一覧'"></h1>
 
-            <div th:if="${reviewsPage.totalElements == 0}" class="alert alert-info text-center">
-                <p>まだレビューがありません。</p>
-            </div>
+				<div th:if="${reviewsPage.totalElements == 0}"
+					class="alert alert-info text-center">
+					<p>まだレビューがありません。</p>
+				</div>
 
-            <div th:each="review : ${reviewsPage.content}" class="card mb-3">
-                <div class="card-body">
-                    <!-- 星評価表示 -->
-                    <div>
-                        <span class="star-full"
-                              th:each="i : ${#numbers.sequence(1, review.point)}">★</span>
-                        <span class="star-empty"
-                              th:each="i : ${#numbers.sequence(review.point + 1, 5)}">☆</span>
-                        <span th:text="${'(' + review.point + '/5)'}"></span>
-                    </div>
+				<div th:each="review : ${reviewsPage.content}" class="card mb-3">
+					<div class="card-body">
+						<!-- 星評価表示 -->
+						<div>
+							<!-- ★ を review.point 回表示 -->
+							<span class="star-full"
+								th:each="i : ${#numbers.sequence(1, review.point)}">★</span>
 
-                    <h6 class="text-muted">
-                        投稿者:
-                        <span th:text="${review.user.name}"></span> -
-                        <span th:text="${#temporals.format(review.updatedAt, 'yyyy/MM/dd HH:mm')}"></span>
-                    </h6>
-                    <p class="card-text" th:text="${review.reviewComment}"></p>
-                </div>
-            </div>
+							<!-- (5 - point) が 1以上のときだけ空星を回す -->
+							<th:block th:if="${review.point < 5}">
+								<span class="star-empty"
+									th:each="i : ${#numbers.sequence(1, 5 - review.point)}">☆
+								</span>
+							</th:block>
 
-            <!-- ページネーション -->
-            <div th:if="${reviewsPage.totalPages > 1}" class="d-flex justify-content-center">
-                <nav aria-label="レビュー一覧ページ">
-                    <ul class="pagination">
-                        <!-- 最初のページへ戻る -->
-                        <li class="page-item">
-                            <span th:if="${reviewsPage.first}" class="page-link disabled">&lt;&lt;</span>
-                            <a th:unless="${reviewsPage.first}"
-                               th:href="@{/restaurants/{id}/reviews(page=0, id=${restaurant.id})}"
-                               class="page-link nagoyameshi-page-link">&lt;&lt;</a>
-                        </li>
+						</div>
 
-                        <!-- 前のページへ戻る-->
-                        <li class="page-item">
-                            <span th:if="${reviewsPage.first}" class="page-link disabled">&lt;</span>
-                            <a th:unless="${reviewsPage.first}"
-                               th:href="@{/restaurants/{id}/reviews(page=${reviewsPage.number - 1}, id=${restaurant.id})}"
-                               class="page-link nagoyameshi-page-link">&lt;</a>
-                        </li>
+						<h6 class="text-muted">
+							投稿者: <span th:text="${review.user.name}"></span> - <span
+								th:text="${#temporals.format(review.updatedAt, 'yyyy/MM/dd HH:mm')}"></span>
+						</h6>
+						<p class="card-text" th:text="${review.reviewComment}"></p>
+					</div>
+				</div>
 
-                        <!-- ページ番号ボタン -->
-                        <li th:each="i : ${#numbers.sequence(0, reviewsPage.totalPages - 1)}" class="page-item">
-                            <span th:if="${i == reviewsPage.number}" class="page-link active nagoyameshi-active"
-                                  th:text="${i + 1}"></span>
-                            <a th:unless="${i == reviewsPage.number}"
-                               th:href="@{/restaurants/{id}/reviews(page=${i}, id=${restaurant.id})}"
-                               class="page-link nagoyameshi-page-link"
-                               th:text="${i + 1}"></a>
-                        </li>
+				<!-- ページネーション -->
+				<div th:if="${reviewsPage.totalPages > 1}"
+					class="d-flex justify-content-center">
+					<nav aria-label="レビュー一覧ページ">
+						<ul class="pagination">
+							<!-- 最初のページへ戻る -->
+							<li class="page-item"><span th:if="${reviewsPage.first}"
+								class="page-link disabled">&lt;&lt;</span> <a
+								th:unless="${reviewsPage.first}"
+								th:href="@{/restaurants/{id}/reviews(page=0, id=${restaurant.id})}"
+								class="page-link nagoyameshi-page-link">&lt;&lt;</a></li>
 
-                        <!-- 次のページへ進む -->
-                        <li class="page-item">
-                            <span th:if="${reviewsPage.last}" class="page-link disabled">&gt;</span>
-                            <a th:unless="${reviewsPage.last}"
-                               th:href="@{/restaurants/{id}/reviews(page=${reviewsPage.number + 1}, id=${restaurant.id})}"
-                               class="page-link nagoyameshi-page-link">&gt;</a>
-                        </li>
+							<!-- 前のページへ戻る-->
+							<li class="page-item"><span th:if="${reviewsPage.first}"
+								class="page-link disabled">&lt;</span> <a
+								th:unless="${reviewsPage.first}"
+								th:href="@{/restaurants/{id}/reviews(page=${reviewsPage.number - 1}, id=${restaurant.id})}"
+								class="page-link nagoyameshi-page-link">&lt;</a></li>
 
-                        <!-- 最後のページへ進む -->
-                        <li class="page-item">
-                            <span th:if="${reviewsPage.last}" class="page-link disabled">&gt;&gt;</span>
-                            <a th:unless="${reviewsPage.last}"
-                               th:href="@{/restaurants/{id}/reviews(page=${reviewsPage.totalPages - 1}, id=${restaurant.id})}"
-                               class="page-link nagoyameshi-page-link">&gt;&gt;</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div><!-- /ページネーション -->
-        </div><!-- /container -->
-    </main>
+							<!-- ページ番号ボタン -->
+							<li
+								th:each="i : ${#numbers.sequence(0, reviewsPage.totalPages - 1)}"
+								class="page-item"><span th:if="${i == reviewsPage.number}"
+								class="page-link active nagoyameshi-active" th:text="${i + 1}"></span>
+								<a th:unless="${i == reviewsPage.number}"
+								th:href="@{/restaurants/{id}/reviews(page=${i}, id=${restaurant.id})}"
+								class="page-link nagoyameshi-page-link" th:text="${i + 1}"></a>
+							</li>
 
-    <!-- フッター -->
-    <div th:replace="~{fragment :: footer}"></div>
-</div><!-- /nagoyameshi-wrapper -->
+							<!-- 次のページへ進む -->
+							<li class="page-item"><span th:if="${reviewsPage.last}"
+								class="page-link disabled">&gt;</span> <a
+								th:unless="${reviewsPage.last}"
+								th:href="@{/restaurants/{id}/reviews(page=${reviewsPage.number + 1}, id=${restaurant.id})}"
+								class="page-link nagoyameshi-page-link">&gt;</a></li>
 
-<div th:replace="~{fragment :: scripts}"></div>
+							<!-- 最後のページへ進む -->
+							<li class="page-item"><span th:if="${reviewsPage.last}"
+								class="page-link disabled">&gt;&gt;</span> <a
+								th:unless="${reviewsPage.last}"
+								th:href="@{/restaurants/{id}/reviews(page=${reviewsPage.totalPages - 1}, id=${restaurant.id})}"
+								class="page-link nagoyameshi-page-link">&gt;&gt;</a></li>
+						</ul>
+					</nav>
+				</div>
+				<!-- /ページネーション -->
+			</div>
+			<!-- /container -->
+		</main>
+
+		<!-- フッター -->
+		<div th:replace="~{fragment :: footer}"></div>
+	</div>
+	<!-- /nagoyameshi-wrapper -->
+
+	<div th:replace="~{fragment :: scripts}"></div>
 </body>
 </html>

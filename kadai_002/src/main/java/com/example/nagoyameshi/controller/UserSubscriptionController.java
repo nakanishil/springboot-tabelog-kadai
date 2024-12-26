@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.nagoyameshi.entity.Role;
@@ -63,21 +64,34 @@ public class UserSubscriptionController {
         // Stripe APIキー設定
         Stripe.apiKey = stripeApiKey;
         
-        // サブスク用のセッションパラメータを設定
-        // success_url, cancel_urlは実際のドメインや環境に合わせて修正予定
-        // 仮でhttp://localhost:8080/userを成功・キャンセルともに指定
         SessionCreateParams params = SessionCreateParams.builder()
-          .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-          .setSuccessUrl("http://localhost:8080/user?session_id={CHECKOUT_SESSION_ID}")
-          .setCancelUrl("http://localhost:8080/user?canceled=true")
-          .addLineItem(
-              SessionCreateParams.LineItem.builder()
-                .setPrice(PRICE_ID)
-                .setQuantity(1L)
-                .build()
-          )
-          .setCustomerEmail(user.getMailAddress()) // Stripe上でカスタマーを紐づけるのにメールアドレスを利用
-          .build();
+        		  .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+        		  .setSuccessUrl(System.getenv("STRIPE_SUCCESS_URL") + "?session_id={CHECKOUT_SESSION_ID}") // 環境変数を取得
+        		  .setCancelUrl(System.getenv("STRIPE_CANCEL_URL")) // 環境変数を取得
+        		  .addLineItem(
+        		      SessionCreateParams.LineItem.builder()
+        		        .setPrice(PRICE_ID)
+        		        .setQuantity(1L)
+        		        .build()
+        		  )
+        		  .setCustomerEmail(user.getMailAddress())
+        		  .build();
+
+//        // サブスク用のセッションパラメータを設定
+//        // success_url, cancel_urlは実際のドメインや環境に合わせて修正予定
+//        // 仮でhttp://localhost:8080/userを成功・キャンセルともに指定
+//        SessionCreateParams params = SessionCreateParams.builder()
+//          .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+//          .setSuccessUrl("http://localhost:8080/user?session_id={CHECKOUT_SESSION_ID}")
+//          .setCancelUrl("http://localhost:8080/user?canceled=true")
+//          .addLineItem(
+//              SessionCreateParams.LineItem.builder()
+//                .setPrice(PRICE_ID)
+//                .setQuantity(1L)
+//                .build()
+//          )
+//          .setCustomerEmail(user.getMailAddress()) // Stripe上でカスタマーを紐づけるのにメールアドレスを利用
+//          .build();
 
         // セッション作成
         Session session = Session.create(params);
@@ -139,5 +153,40 @@ public class UserSubscriptionController {
 
         return "redirect:/user";
     }
+    
+    @GetMapping("/success")
+    public String handleSubscriptionSuccess(@RequestParam("session_id") String sessionId, Model model) {
+        try {
+            Stripe.apiKey = stripeApiKey;
+            Session session = Session.retrieve(sessionId);
+
+            String customerEmail = session.getCustomerEmail();
+            User user = userRepository.findByMailAddress(customerEmail);
+
+            if (user != null) {
+                user.setSubscriptionId(session.getSubscription());
+                Role payingRole = roleRepository.findByName("ROLE_PAYING_MEMBER");
+                if (payingRole != null) {
+                    user.setRole(payingRole);
+                    userRepository.save(user);
+                    model.addAttribute("message", "有料会員登録が完了しました！");
+                } else {
+                    model.addAttribute("message", "有料会員のロールが見つかりませんでした。");
+                }
+
+                // ★ ここで user をモデルに詰める
+                model.addAttribute("user", user);
+            } else {
+                model.addAttribute("message", "ユーザーが見つかりませんでした。");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "決済情報の処理中にエラーが発生しました。");
+        }
+
+        // そのまま "user/index" を返す場合、テンプレートで user を参照できるよう上でモデルに追加しておく
+        return "user/index";
+    }
+
 
 }

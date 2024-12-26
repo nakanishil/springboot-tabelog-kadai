@@ -1,5 +1,7 @@
 package com.example.nagoyameshi.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -62,5 +64,13 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Integer>
     public Page<Restaurant> findByCategoryIdOrderByPriceRangeAsc(Integer categoryId, Pageable pageable);
     public Page<Restaurant> findByCategoryIdAndPriceRangeLessThanEqualOrderByCreatedAtDesc(Integer categoryId, Integer priceRange, Pageable pageable);
     public Page<Restaurant> findByCategoryIdAndPriceRangeLessThanEqualOrderByPriceRangeAsc(Integer categoryId, Integer priceRange, Pageable pageable);
+    
+    // ---------------------------------------------------------------
+    // CSV出力用に追加 2024-12-25 SAMURAI
+    // ---------------------------------------------------------------
+    // 全件検索
+    public List<Restaurant> findAll();
+    // キーワード検索
+    public List<Restaurant> findByNameLike(String keyword);
 
 }
