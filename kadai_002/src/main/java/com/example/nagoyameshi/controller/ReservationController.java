@@ -153,6 +153,39 @@ public class ReservationController {
         
         return "redirect:/reservations?reserved";
     }
+    // 予約キャンセル機能
+    @PostMapping("/reservations/{id}/cancel")
+    public String cancel(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal UserDetailsImpl userDetailsImpl,
+            RedirectAttributes redirectAttributes
+    ) {
+        // 1. idに対応する予約データを取得
+        //    見つからない場合は例外が発生するか、nullになるかの対応
+        Reservation reservation = reservationRepository.findById(id).orElse(null);
+        if (reservation == null) {
+            // 該当の予約が見つからない場合は一覧にリダイレクトするなど
+            redirectAttributes.addFlashAttribute("error", "予約が見つかりませんでした。");
+            return "redirect:/reservations";
+        }
+
+        // 2. ログイン中のユーザーかどうかを確認
+        //    (予約したユーザー本人でなければキャンセル不可)
+        User user = userDetailsImpl.getUser();
+        if (!reservation.getUser().getId().equals(user.getId())) {
+            // 権限がない場合
+            redirectAttributes.addFlashAttribute("error", "他のユーザーの予約はキャンセルできません。");
+            return "redirect:/reservations";
+        }
+
+        // 3. 予約を物理削除
+        reservationRepository.delete(reservation);
+
+        // 4. メッセージをフラッシュスコープに設定し、予約一覧にリダイレクト
+        redirectAttributes.addFlashAttribute("cancelled", true);
+        return "redirect:/reservations";
+    }
+
 
 
 }
