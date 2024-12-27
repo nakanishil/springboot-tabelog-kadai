@@ -105,11 +105,14 @@
 								    </div>
 								</div>
 								<div th:if="${@userService.isFreeMember(user)}" class="row pb-2 mb-2 border-bottom">
-								  <p>有料会員は、お気に入り機能と予約機能が変便利です。</p>
+								  <p>有料会員は、お気に入り機能と予約機能が大変便利です。</p>
 								  <a th:href="@{/user/subscribe}" class="btn btn-primary">有料会員登録へ</a>
 								</div>
+								<a th:href="@{/user/changeCard}" class="btn btn-secondary">
+								    カード情報を変更する
+								</a>
+
 								<div th:if="${@userService.isPayingMember(user)}">
-								  <p>現在有料会員です。</p>
 								  <form th:action="@{/user/cancel}" method="post">
 								    <button type="submit" class="btn btn-danger">有料会員を解約する</button>
 								  </form>

@@ -62,4 +62,8 @@ public class User {
     @Column(name = "subscription_id", length = 255)
     private String subscriptionId;
     
+    @Column(name = "customer_id", length = 255)
+    private String customerId;
+
+    
 }

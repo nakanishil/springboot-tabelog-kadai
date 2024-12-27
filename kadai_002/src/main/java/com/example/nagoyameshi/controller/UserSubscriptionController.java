@@ -24,6 +24,7 @@ import com.stripe.model.Subscription;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 
+
 @Controller
 public class UserSubscriptionController {
     
@@ -162,6 +163,11 @@ public class UserSubscriptionController {
 
             String customerEmail = session.getCustomerEmail();
             User user = userRepository.findByMailAddress(customerEmail);
+            
+            //241227 customerIdを保存
+            String stripeCustomerId = session.getCustomer();
+            user.setCustomerId(stripeCustomerId); // DBのカラムに保存
+            userRepository.save(user);
 
             if (user != null) {
                 user.setSubscriptionId(session.getSubscription());
@@ -187,6 +193,41 @@ public class UserSubscriptionController {
         // そのまま "user/index" を返す場合、テンプレートで user を参照できるよう上でモデルに追加しておく
         return "user/index";
     }
+    
+ // 例）コントローラクラス等でCustomer Portalを作成する場合
+    @GetMapping("/user/changeCard")
+    public String redirectToPortal(@AuthenticationPrincipal UserDetailsImpl userDetailsImpl) {
+        Stripe.apiKey = stripeApiKey;
+        User user = userRepository.getReferenceById(userDetailsImpl.getUser().getId());
+
+        String customerId = user.getCustomerId();
+        if (customerId == null || customerId.isEmpty()) {
+            return "redirect:/user";
+        }
+
+        try {
+            // billingportal の SessionCreateParams（完全限定名で記述）
+            com.stripe.param.billingportal.SessionCreateParams portalParams =
+                com.stripe.param.billingportal.SessionCreateParams.builder()
+                    .setCustomer(customerId)
+                    .setReturnUrl("https://nagoyameshi-nakanishil-399f0a6a6e52.herokuapp.com/user") 
+                    .build();
+
+            // billingportal の Session（完全限定名で記述）
+            com.stripe.model.billingportal.Session portalSession =
+                com.stripe.model.billingportal.Session.create(portalParams);
+
+            return "redirect:" + portalSession.getUrl();
+
+        } catch (StripeException e) {
+            e.printStackTrace();
+            return "redirect:/user";
+        }
+    }
+
+
+    
+
 
 
 }

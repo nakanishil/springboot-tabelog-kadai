@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
 	enabled BOOLEAN NOT NULL DEFAULT TRUE, --有効性
 	role_id INT NOT NULL, --役職番号
 	subscription_id VARCHAR(255), --サブスクリプションID
+	customer_id VARCHAR(255),
 	FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
